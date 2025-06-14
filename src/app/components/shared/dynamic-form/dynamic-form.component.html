@@ -1,1 +1,80 @@
-<p>dynamic-form works!</p>
+<form [formGroup]="form">
+    <h2 class="form-title">{{title()}}</h2>
+   <div class="form-grid">
+  <ng-container *ngFor="let field of fields">
+    <div class="form-field" [ngClass]="'col-span-' + field.colSpan">
+      <ng-container [ngSwitch]="field.type">
+
+        <!-- Input -->
+        <mat-form-field *ngSwitchCase="'input'" appearance="outline">
+          <mat-label>{{ field.label }}</mat-label>
+          <input matInput [formControlName]="field.name" />
+        </mat-form-field>
+
+        <!-- Password -->
+        <mat-form-field *ngSwitchCase="'password'" appearance="outline">
+          <mat-label>{{ field.label }}</mat-label>
+          <input matInput type="password" [formControlName]="field.name" />
+        </mat-form-field>
+
+        <!-- Select -->
+        <mat-form-field *ngSwitchCase="'select'" appearance="outline">
+          <mat-label>{{ field.label }}</mat-label>
+          <mat-select [formControlName]="field.name">
+            <mat-option *ngFor="let opt of field.options" [value]="opt.value">
+              {{ opt.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Date -->
+        <mat-form-field *ngSwitchCase="'date'" appearance="outline">
+          <mat-label>{{ field.label }}</mat-label>
+          <input matInput [matDatepicker]="picker" [formControlName]="field.name" />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <!-- Checkbox -->
+        <div *ngSwitchCase="'checkbox'" class="form-control-wrapper">
+          <label class="form-label">{{ field.label }}</label>
+          <mat-checkbox [formControlName]="field.name"></mat-checkbox>
+        </div>
+
+        <!-- Radio -->
+        <div *ngSwitchCase="'radio'" class="form-control-wrapper">
+          <label class="form-label">{{ field.label }}</label>
+          <mat-radio-group [formControlName]="field.name">
+            <mat-radio-button *ngFor="let opt of field.options" [value]="opt.value">
+              {{ opt.label }}
+            </mat-radio-button>
+          </mat-radio-group>
+        </div>
+
+        <!-- Toggle -->
+        <div *ngSwitchCase="'toggle'" class="form-control-wrapper">
+          <label class="form-label">{{ field.label }}</label>
+          <mat-slide-toggle [formControlName]="field.name"></mat-slide-toggle>
+        </div>
+
+      </ng-container>
+    </div>
+  </ng-container>
+</div>
+
+
+    <div class="button-group">
+        <button mat-flat-button (click)="submitForm()" class="btn-submit">
+            <i class="material-icons">check_circle</i> &nbsp; Submit
+        </button>
+
+        <button mat-flat-button class="btn-cancel">
+            <i class="material-icons">cancel</i> &nbsp; Cancel
+        </button>
+
+        <button mat-flat-button class="btn-warn">
+            <i class="material-icons">delete</i> &nbsp; Delete
+        </button>
+    </div>
+
+</form>
