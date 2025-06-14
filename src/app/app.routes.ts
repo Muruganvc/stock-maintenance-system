@@ -8,22 +8,26 @@ import { PasswordChangeComponent } from './components/settings/password-change/p
 import { NewUserComponent } from './components/settings/new-user/new-user.component';
 import { UserPermissionComponent } from './components/settings/user-permission/user-permission.component';
 export const routes: Routes = [
-    { path: '', redirectTo: 'login', pathMatch: 'full' },
-    { path: 'login', component: LoginComponent },
-    {
-        path: '', component: LayoutComponent,
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'login', component: LoginComponent },
+  {
+    path: '', component: LayoutComponent,
+    children: [
+      { path: 'dashboard', component: DashboardComponent },
+      { path: 'product-list', component: ProductListComponent },
+      {
+        path: 'setting',
+        component: SettingsComponent,
         children: [
-            { path: 'dashboard', component: DashboardComponent },
-            { path: 'product-list', component: ProductListComponent },
-            {
-                path: 'setting',
-                component: SettingsComponent,
-                children: [
-                    { path: 'change-password', component: PasswordChangeComponent },
-                    { path: 'user-permission', component: UserPermissionComponent },
-                    { path: 'add-user', component: NewUserComponent }
-                ]
-            }
+          // 👇 Default route for /setting
+          { path: '', redirectTo: 'change-password', pathMatch: 'full' },
+
+          { path: 'change-password', component: PasswordChangeComponent },
+          { path: 'user-permission', component: UserPermissionComponent },
+          { path: 'add-user', component: NewUserComponent }
         ]
-    }
+      }
+    ]
+  }
 ];
+
