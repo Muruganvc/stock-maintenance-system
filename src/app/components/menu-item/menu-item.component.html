@@ -1,0 +1,27 @@
+<a mat-list-item [routerLink]="item.route" routerLinkActive="active-route selected-menu-item" #rla="routerLinkActive"
+    (click)="toggleNested()" [class.hovered]="rla.isActive">
+    <i matListItemIcon class="material-icons">{{ item.icon }}</i>
+    <span matListItemTitle>{{ item.label }}</span>
+
+    @if(item.subMenuItem){
+    <span matListItemMeta>
+        @if (nestedMenuItem()) {
+        <i class="material-icons">expand_less</i>
+        }@else {
+        <i class="material-icons">expand_more</i>
+        }
+    </span>
+    }
+</a>
+
+@if (item.subMenuItem && nestedMenuItem()) {
+<div>
+    @for (subItem of item.subMenuItem; track subItem.label) {
+    <a mat-list-item [routerLink]="item.route +'/'+ subItem.route" routerLinkActive="active-route selected-menu-item" #rla="routerLinkActive" class="indented" 
+        [class.hovered]="rla.isActive">
+        <i matListItemIcon class="material-icons">{{ subItem.icon }}</i>
+        <span matListItemTitle>{{ subItem.label }}</span>
+    </a>
+    }
+</div>
+}

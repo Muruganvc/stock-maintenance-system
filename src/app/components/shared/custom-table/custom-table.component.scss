@@ -1,0 +1,133 @@
+.table-container {
+  padding: 1rem;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.sticky-header-table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.scroll-body {
+  max-height: 400px;
+  overflow-y: auto;
+}
+.full-width-table {
+  width: 100%;
+  min-width: max-content; /* allows scroll only when content wider */
+  table-layout: auto;
+}
+
+th.mat-header-cell,
+td.mat-cell {
+  padding: 8px 16px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* Alignment classes */
+.left {
+  text-align: left !important;
+}
+.center {
+  text-align: center !important;
+}
+.right {
+  text-align: right !important;
+}
+
+/* Inline edit styling */
+.edit-cell-field {
+  width: 100%;
+  margin-top: 6px;
+
+  ::ng-deep .mat-form-field-wrapper {
+    padding: 0;
+  }
+  ::ng-deep .mat-input-element {
+    font-size: 14px;
+    height: 28px;
+    text-align: inherit;
+  }
+}
+
+
+.sortable {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sort-icon {
+  font-size: 16px;
+  vertical-align: middle;
+  color: #666;
+}
+
+.icon-save {
+  color: green;
+}
+
+.icon-cancel {
+  color: orange;
+}
+
+.icon-edit {
+  color: #1976d2; /* Angular Material primary blue */
+}
+
+.icon-delete {
+  color: red;
+}
+
+
+.mobile-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.card-view {
+  padding: 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  border-radius: 12px;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 14px;
+}
+
+.card-label {
+  font-weight: 600;
+  color: #333;
+  margin-right: 0.5rem;
+}
+
+.card-value {
+  color: #555;
+  word-break: break-word;
+  text-align: right;
+  flex: 1;
+}
+
+.card-actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}

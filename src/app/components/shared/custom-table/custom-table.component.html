@@ -1,0 +1,102 @@
+<mat-form-field appearance="outline" class="search-box sticky-search">
+    <mat-label>Search</mat-label>
+    <input matInput [(ngModel)]="searchTerm" (input)="applySearch()" />
+</mat-form-field>
+
+<div class="table-container">
+    @if (!isMobile) {
+    <div class="table-wrapper">
+        <!-- Sticky Header Table -->
+        <table mat-table [dataSource]="[]" class="mat-elevation-z2 full-width-table sticky-header-table">
+            @for (column of columns; track column.key) {
+            <ng-container [matColumnDef]="column.key">
+                <th mat-header-cell *matHeaderCellDef [ngClass]="[column.align, 'sortable']"
+                    (click)="sortData(column.key)" [ngClass]="column.align">
+                    {{ column.label }}
+                    @if (sortColumn === column.key) {
+                    <i class="material-icons sort-icon"> {{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward'
+                        }}</i>
+                    }
+                </th>
+            </ng-container>
+            }
+
+            <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="right">Actions</th>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="columnKeysWithActions"></tr>
+        </table>
+
+        <!-- Scrollable Body Table -->
+        <div class="scroll-body">
+            <table mat-table [dataSource]="pagedData" class="mat-elevation-z2 full-width-table">
+                @for (column of columns; track column.key) {
+                <ng-container [matColumnDef]="column.key">
+                    <td mat-cell *matCellDef="let row" [ngClass]="column.align">
+                        @if (editingRow === row && column.editable) {
+                        <mat-form-field appearance="outline" class="edit-cell-field">
+                            <input matInput [(ngModel)]="editedRowData[column.key]" />
+                        </mat-form-field>
+                        } @else {
+                        {{ row[column.key] }}
+                        }
+                    </td>
+                </ng-container>
+                }
+                <ng-container matColumnDef="actions">
+                    <td mat-cell *matCellDef="let row" class="right">
+                        @if (editingRow === row) {
+                        <button mat-icon-button color="primary" (click)="onSaveClick()" matTooltip="Save">
+                            <i class="material-icons icon-save">save</i>
+                        </button>
+                        <button mat-icon-button color="warn" (click)="onCancelClick()" matTooltip="Cancel">
+                            <i class="material-icons icon-cancel">cancel</i>
+
+                        </button>
+                        } @else {
+                        <button mat-icon-button color="primary" (click)="onEditClick(row)" matTooltip="Edit">
+                            <i class="material-icons icon-edit">edit</i>
+                        </button>
+                        <button mat-icon-button color="warn" (click)="delete.emit(row)" matTooltip="Delete">
+                            <i class="material-icons icon-delete">delete</i>
+                        </button>
+                        }
+                    </td>
+
+                </ng-container>
+
+                <tr mat-row *matRowDef="let row; columns: columnKeysWithActions;"></tr>
+            </table>
+        </div>
+    </div>
+    }
+
+@if (isMobile) {
+  <div class="mobile-cards-container">
+    <mat-card *ngFor="let row of pagedData" class="card-view">
+      <div class="card-content">
+        @for (column of columns; track column.key) {
+          <div class="card-row">
+            <strong class="card-label">{{ column.label }}:</strong>
+            <span class="card-value">{{ row[column.key] }}</span>
+          </div>
+        }
+      </div>
+      <div class="card-actions">
+        <button mat-icon-button color="primary" (click)="onEditClick(row)" matTooltip="Edit">
+            <i class="material-icons">edit</i>
+        </button>
+        <button mat-icon-button color="warn" (click)="delete.emit(row)" matTooltip="Delete">
+           <i class="material-icons">delete</i>
+        </button>
+      </div>
+    </mat-card>
+  </div>
+}
+
+
+    <mat-paginator [length]="filteredData.length" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 20]"
+        (page)="onPageChange($event)">
+    </mat-paginator>
+</div>

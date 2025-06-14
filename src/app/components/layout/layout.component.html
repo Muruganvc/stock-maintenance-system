@@ -1,0 +1,29 @@
+<mat-toolbar color="primary" class="top-toolbar custom-shadow">
+    <button mat-icon-button (click)="sidenav.toggle()">
+        <i class="material-icons">menu</i>
+    </button>
+
+    <span class="toolbar-title">My App</span>
+    <span class="spacer"></span>
+
+    <button mat-icon-button aria-label="Favorite">
+        <i class="material-icons">favorite</i>
+    </button>
+
+    <button mat-icon-button aria-label="Share">
+        <i class="material-icons">share</i>
+    </button>
+</mat-toolbar>
+
+<mat-sidenav-container class="main-container">
+    <mat-sidenav #sidenav [mode]="isMobile() ? 'over' : 'side'" [opened]="!isMobile()" class="sidenav">
+        <app-custom-sidenav></app-custom-sidenav>
+    </mat-sidenav>
+    <mat-sidenav-content class="content">
+        <router-outlet />
+    </mat-sidenav-content>
+</mat-sidenav-container>
+ <!-- Footer -->
+<footer class="footer">
+    &copy; 2025 Your Company
+</footer>
