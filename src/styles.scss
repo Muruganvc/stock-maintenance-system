@@ -52,12 +52,11 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;zoom: 1; }
   font-family: 'Material Icons';
   font-style: normal;
   font-weight: 400;
-  src: url('/fonts/MaterialIcons-Regular.woff2') format('woff2'),
-       url('/fonts/MaterialIcons-Regular.woff') format('woff'),
-       url('/fonts/MaterialIcons-Regular.ttf') format('truetype'),
-       url('/fonts/MaterialIcons-Regular.eot') format('truetype');
+  src: url('assets/fonts/MaterialIcons-Regular.woff2') format('woff2'),
+       url('assets/fonts/MaterialIcons-Regular.woff') format('woff'),
+       url('assets/fonts/MaterialIcons-Regular.ttf') format('truetype'),
+       url('assets/fonts/MaterialIcons-Regular.eot'); // optional
 }
-
 .material-icons {
   font-family: 'Material Icons' !important;
   font-style: normal;

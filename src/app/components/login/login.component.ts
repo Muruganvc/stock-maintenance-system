@@ -40,7 +40,6 @@ export class LoginComponent {
       this.showSuccessMessage();
       this.router.navigate(['/dashboard']);
       console.log('Login data:', this.loginForm.value);
-
     } else {
       this.showErrorMessage();
     }
