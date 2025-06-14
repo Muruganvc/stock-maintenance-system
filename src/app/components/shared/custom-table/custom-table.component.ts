@@ -1,13 +1,28 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, effect, EventEmitter, input, Input, OnChanges, OnInit, Output, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { SelectionModel } from '@angular/cdk/collections';
+import { MatIconModule } from '@angular/material/icon'
+import { LayoutModule } from '@angular/cdk/layout';
+import { MatExpansionModule } from '@angular/material/expansion';
+export interface TableRow {
+  id: string | number;
+  [key: string]: any;
+}
+
+export interface TableColumn {
+  key: string;
+  label: string;
+  align?: 'left' | 'center' | 'right';
+}
+
 @Component({
   selector: 'app-custom-table',
   standalone: true,
@@ -19,127 +34,127 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
     MatFormFieldModule,
     MatInputModule,
     MatCardModule,
-    MatButtonModule
+    MatButtonModule, MatIconModule,
+    LayoutModule, MatExpansionModule
   ],
   templateUrl: './custom-table.component.html',
   styleUrl: './custom-table.component.scss'
 })
-export class CustomTableComponent implements OnInit {
-  @Input() data: any[] = [];
-  @Input() columns: { key: string; label: string; editable?: boolean, align: string }[] = [];
-  @Output() edit = new EventEmitter<any>();
-  @Output() delete = new EventEmitter<any>();
-
-  columnKeys: string[] = [];
-  columnKeysWithActions: string[] = [];
-  filteredData: any[] = [];
-  pagedData: any[] = [];
+export class CustomTableComponent<T extends TableRow> implements OnChanges {
   searchTerm = '';
+  applyFilter(): void {
+    if (!this.isMobile) {
+      this.dataSource.filter = this.searchTerm.trim().toLowerCase();
+    }
+    // On mobile, filteredData getter will take care of filtering
+  }
+  @Input() data: T[] = [];
+  @Input() columns: TableColumn[] = [];
+  @Input() showCheckbox = false;
+  @Input() showActions = true;
+
+  title = input.required();
+  addBtnTitle = input();
+
+  @Output() edit = new EventEmitter<T>();
+  @Output() delete = new EventEmitter<T>();
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
+  dataSource = new MatTableDataSource<T>([]);
+  displayedColumns: string[] = [];
+
+  editRowId: TableRow['id'] | null = null;
+  editedRow: Partial<T> = {};
+
   isMobile = false;
-  pageSize = 5;
-  currentPage = 0;
+  isTablet = false;
 
-  editingRow: any = null;
-  editedRowData: any = {};
-  sortColumn: string = '';
-  sortDirection: 'asc' | 'desc' = 'asc';
+  constructor(private breakpointObserver: BreakpointObserver) { }
 
-  constructor(private bp: BreakpointObserver) { }
+  get filteredData(): T[] {
+    const term = this.searchTerm?.toLowerCase() || '';
+    if (!term) return this.data;
 
-  sortData(columnKey: string): void {
-    if (this.sortColumn === columnKey) {
-      // Toggle sort direction
-      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-    } else {
-      // New column sorted
-      this.sortColumn = columnKey;
-      this.sortDirection = 'asc';
-    }
-
-    this.filteredData = [...this.filteredData].sort((a, b) => {
-      const valueA = a[columnKey];
-      const valueB = b[columnKey];
-
-      if (valueA == null || valueB == null) return 0;
-
-      const compare = typeof valueA === 'number'
-        ? valueA - valueB
-        : String(valueA).localeCompare(String(valueB));
-
-      return this.sortDirection === 'asc' ? compare : -compare;
-    });
-
-    this.updatePagedData();
-  }
-
-  ngOnInit(): void {
-    this.columnKeys = this.columns.map(c => c.key);
-    this.columnKeysWithActions = [...this.columnKeys, 'actions'];
-    this.filteredData = [...this.data];
-    this.updatePagedData();
-
-    // ✅ Observe all relevant breakpoints
-    this.bp.observe([
-      Breakpoints.XSmall,
-      Breakpoints.Small,
-      Breakpoints.Medium,
-      Breakpoints.Large,
-      Breakpoints.XLarge
-    ]).subscribe(result => {
-      if (result.breakpoints[Breakpoints.XSmall] || result.breakpoints[Breakpoints.Small]) {
-        this.isMobile = true;
-      } else {
-        this.isMobile = false;
-      }
-
-      // Optional: log current breakpoint
-      console.log('isMobile:', this.isMobile);
-    });
-  }
-
-  applySearch() {
-    const term = this.searchTerm.toLowerCase();
-    this.filteredData = this.data.filter(row =>
-      this.columnKeys.some(key => (row[key] + '').toLowerCase().includes(term))
+    return this.data.filter(row =>
+      this.columns.some(col => {
+        const value = row[col.key];
+        return value?.toString().toLowerCase().includes(term);
+      })
     );
-    this.currentPage = 0;
-    this.updatePagedData();
   }
-
+  pageIndex = 0;
+  pageSize = 5;
+  get paginatedMobileData(): T[] {
+    const start = this.pageIndex * this.pageSize;
+    return this.filteredData.slice(start, start + this.pageSize);
+  }
   onPageChange(event: PageEvent) {
+    this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
-    this.currentPage = event.pageIndex;
-    this.updatePagedData();
+  }
+  get paginatorLength(): number {
+    return Math.max(this.dataSource.filteredData.length, 1);
   }
 
-  updatePagedData() {
-    const start = this.currentPage * this.pageSize;
-    const end = start + this.pageSize;
-    this.pagedData = this.filteredData.slice(start, end);
+  ngOnInit() {
+    this.breakpointObserver.observe([
+      '(max-width: 699px)',    // mobile
+      '(max-width: 1024px)'    // tablet
+    ]).subscribe(result => {
+      this.isMobile = result.breakpoints['(max-width: 699px)'];
+      this.isTablet = result.breakpoints['(max-width: 1024px)'] && !this.isMobile;
+    });
   }
 
-  onEditClick(row: any) {
-    this.editingRow = row;
-    this.editedRowData = { ...row };
+  ngOnChanges() {
+    this.dataSource = new MatTableDataSource(this.data || []);
+    this.dataSource.paginator = this.paginator;
+    this.displayedColumns = this.columns.map(c => c.key);
+    if (this.showActions) this.displayedColumns.push('actions');
+    if (this.showCheckbox) this.displayedColumns.unshift('select');
   }
 
-  onSaveClick() {
-    const index = this.data.findIndex(d => d === this.editingRow);
-    if (index !== -1) {
-      this.data[index] = { ...this.editedRowData };
-      this.applySearch();
-      this.edit.emit(this.data[index]); // emit updated row
+  ngAfterViewInit() {
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
     }
-    this.editingRow = null;
-    this.editedRowData = {};
-  }
-  onCancelClick() {
-    this.editingRow = null;
-    this.editedRowData = {};
   }
 
-  getValue(item: any) {
-    debugger;
-    return item.key;
+  startEdit(row: T) {
+    this.editRowId = row.id;
+    this.editedRow = { ...row };
+  }
+
+  saveRow() {
+    const updated = { ...this.editedRow } as T;
+    const index = this.data.findIndex(d => d.id === updated.id);
+    if (index > -1) {
+      this.data[index] = updated;
+      this.dataSource.data = [...this.data];
+      this.edit.emit(updated);
+    }
+    this.cancelEdit();
+  }
+
+  cancelEdit() {
+    this.editRowId = null;
+    this.editedRow = {};
+  }
+
+  deleteRow(row: T) {
+    this.delete.emit(row);
+  }
+
+  isEditing(row: T) {
+    return this.editRowId === row.id;
+  }
+  getIconClass(type: string): string {
+    switch (type) {
+      case 'info': return 'icon-info';
+      case 'warning': return 'icon-warning';
+      case 'error': return 'icon-error';
+      default: return 'icon-default';
+    }
   }
 }
