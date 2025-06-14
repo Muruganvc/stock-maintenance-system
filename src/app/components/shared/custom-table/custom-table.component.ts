@@ -58,6 +58,7 @@ export class CustomTableComponent<T extends TableRow> implements OnChanges {
 
   @Output() edit = new EventEmitter<T>();
   @Output() delete = new EventEmitter<T>();
+  @Output() newOpen = new EventEmitter<string>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -156,5 +157,8 @@ export class CustomTableComponent<T extends TableRow> implements OnChanges {
       case 'error': return 'icon-error';
       default: return 'icon-default';
     }
+  }
+  openNew() {
+    this.newOpen.emit('new');
   }
 }

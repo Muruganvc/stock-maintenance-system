@@ -21,14 +21,14 @@
 }
 
 form{
-  min-height: 100%;
+  // min-height: 100%;
   min-width: 100%;
   margin-bottom: 2rem;
 }
 /* === GRID SYSTEM === */
 .form-grid {
   display: grid;
-  row-gap: 0;
+  row-gap: 0.2rem;
   column-gap: 1rem;
   grid-template-columns: repeat(12, 1fr);
 
@@ -44,17 +44,7 @@ form{
     grid-template-columns: 1fr;
   }
 }
-
-.form-grid {
-  display: grid;
-  row-gap: 0;
-  column-gap: 1rem;
-  grid-template-columns: repeat(12, 1fr);
-
-  @media (max-width: 768px) {
-    grid-template-columns: repeat(1, 1fr);
-  }
-}
+ 
 
 @for $i from 1 through 12 {
   .col-span-#{$i} {
@@ -136,7 +126,7 @@ mat-form-field {
   line-height: 1;
   min-height: 32px;
   // gap: 0.5rem;
-  row-gap: 0;
+  row-gap: 0.8rem;
   column-gap: 0.5rem;
   padding: 0.25rem 0.5rem;
   // margin-bottom: 1rem;

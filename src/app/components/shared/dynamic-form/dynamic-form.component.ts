@@ -1,4 +1,4 @@
-import { Component, inject, input, Input } from '@angular/core';
+import { Component, EventEmitter, inject, input, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -34,22 +34,21 @@ import { MatButtonModule } from '@angular/material/button';
 export class DynamicFormComponent {
   @Input() formGroup!: FormGroup;
   @Input() fields: any[] = [];
-
-  form: FormGroup = new FormGroup({});
-
-  private fb = inject(FormBuilder);
-
   title = input.required<string>();
+  @Output() cancelEvent = new EventEmitter<string>();
 
   ngOnInit() {
-    const group: any = {};
     for (const field of this.fields) {
-      group[field.name] = new FormControl('');
+      if (!this.formGroup.contains(field.name)) {
+        this.formGroup.addControl(field.name, new FormControl(''));
+      }
     }
-    this.form = this.fb.group(group);
   }
 
   submitForm() {
-    console.log(this.form.value);
+    console.log(this.formGroup.value);
+  }
+  cancel = () => {
+    this.cancelEvent.emit('cancel');
   }
 }

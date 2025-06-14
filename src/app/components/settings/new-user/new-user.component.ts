@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DynamicFormComponent } from '../../shared/dynamic-form/dynamic-form.component';
+
 
 @Component({
   selector: 'app-new-user',
@@ -10,78 +11,78 @@ import { DynamicFormComponent } from '../../shared/dynamic-form/dynamic-form.com
   styleUrl: './new-user.component.scss'
 })
 export class NewUserComponent {
-  form = new FormGroup({
-    name: new FormControl(''),
-    gender: new FormControl(''),
-    dob: new FormControl(null),
-    agree: new FormControl(false),
-    role: new FormControl(''),
-    subscribe: new FormControl(true)
-  });
 
-/*
-  
+  form: FormGroup;
+  constructor() {
+    this.form = new FormGroup({
+      firstName: new FormControl('Muruganvc', [Validators.required]),
+      lastName: new FormControl('', [Validators.required]),
+      userName: new FormControl(null, [Validators.required, Validators.minLength(4)]),
+      emailId: new FormControl('', [Validators.required, Validators.email]),
+      mobileNumner: new FormControl('', [Validators.required, Validators.pattern(/^[6-9]\d{9}$/)]),
+      password: new FormControl('', [Validators.required, Validators.minLength(6)]),
+      confirmPassword: new FormControl('', [Validators.required]),
+      role: new FormControl('admin', [Validators.required]),
+      isActice: new FormControl(true),
+      superAdmin: new FormControl(true)
+    });
+  }
+
+  ngOnInit(): void {
+    this.loadUserData();
+  }
+
+  loadUserData(): void {
+    // this.http.get<any>('https://api.example.com/user/123')
+    //   .subscribe(user => {
+
+    //   });
+
+    this.form.patchValue({
+      firstName: 'Murugan',
+      lastName: 'Chidambaram',
+      emailId: 'vcmuruganmca@gmail.com',
+      mobileNumber: '9994277980',
+      role: 'admin',
+      isActive: true,
+      superAdmin: true
+    });
+  }
+
   fields = [
-    
-
-    // Row 1 – 2 columns
     { type: 'input', name: 'firstName', label: 'First Name', colSpan: 6 },
     { type: 'input', name: 'lastName', label: 'Last Name', colSpan: 6 },
-    // Row 2 – full width
     { type: 'input', name: 'userName', label: 'User Name', colSpan: 12 },
-    // Row 2 – 2 columns
-    { type: 'input', name: 'email', label: 'Email', colSpan: 6 },
-    { type: 'input', name: 'phone', label: 'Phone', colSpan: 6 },
+    { type: 'input', name: 'emailId', label: 'Email', colSpan: 6 },
+    { type: 'input', name: 'mobileNumber', label: 'Mobile Number', colSpan: 6 },
+    { type: 'password', name: 'password', label: 'Password', colSpan: 6 },
+    { type: 'password', name: 'confirmPassword', label: 'Confirm Password', colSpan: 6 },
 
-    // Row 3 – 3 columns
-    { type: 'input', name: 'city', label: 'City', colSpan: 4 },
-    { type: 'input', name: 'state', label: 'State', colSpan: 4 },
-    { type: 'input', name: 'zip', label: 'Zip Code', colSpan: 4 }
+    {
+      type: 'radio',
+      name: 'role',
+      label: 'Role',
+      colSpan: 4,
+      options: [
+        { label: 'Admin', value: 'admin' },
+        { label: 'User', value: 'user' },
+      ]
+    },
+
+    // {
+    //   type: 'select',
+    //   name: 'state',
+    //   label: 'State',
+    //   colSpan: 12,
+    //   options: [
+    //     { label: 'Tamil Nadu', value: 'TN' },
+    //     { label: 'Kerala', value: 'KL' },
+    //     { label: 'Karnataka', value: 'KA' },
+    //   ]
+    // },
+
+    { type: 'checkbox', name: 'isActive', label: 'Active', colSpan: 4 },
+    { type: 'toggle', name: 'superAdmin', label: 'Super Admin', colSpan: 4 }
   ];
-
-  */
-
-  // fields = [
-  //   { type: 'input', name: 'firstName', label: 'First Name', colSpan: 6 },
-  //   { type: 'input', name: 'lastName', label: 'Last Name', colSpan: 6 },
-  //   { type: 'input', name: 'email', label: 'Email Id' },
-  //   {
-  //     type: 'select', name: 'gender', label: 'Gender', options: [
-  //       { value: 'male', label: 'Male' },
-  //       { value: 'female', label: 'Female' }
-  //     ]
-  //   },
-  //   { type: 'date', name: 'dob', label: 'Date of Birth' },
-  //   {
-  //     type: 'radio', name: 'role', label: 'Role', options: [
-  //       { value: 'admin', label: 'Admin' },
-  //       { value: 'user', label: 'User' }
-  //     ]
-  //   },
-  //   { type: 'toggle', name: 'subscribe', label: 'Subscribe to Newsletter' }
-  // ];
-
-  fields = [
-  { type: 'input', name: 'fullName', label: 'Full Name', colSpan: 12 },
-  { type: 'input', name: 'email', label: 'Email', colSpan: 6 },
-  { type: 'password', name: 'password', label: 'Password', colSpan: 6 },
-  { type: 'input', name: 'city', label: 'City', colSpan: 4 },
-  { type: 'select', name: 'state', label: 'State', colSpan: 4, options: [
-      { label: 'Tamil Nadu', value: 'TN' },
-      { label: 'Kerala', value: 'KL' },
-      { label: 'Karnataka', value: 'KA' },
-    ]
-  },
-  { type: 'input', name: 'zip', label: 'Zip Code', colSpan: 4 },
-  { type: 'checkbox', name: 'subscribe', label: 'Subscribe to newsletter', colSpan: 12 },
-  { type: 'radio', name: 'gender', label: 'Gender', colSpan: 6, options: [
-      { label: 'Male', value: 'male' },
-      { label: 'Female', value: 'female' },
-    ]
-  },
-  { type: 'toggle', name: 'active', label: 'Is Active?', colSpan: 6 },
-  { type: 'date', name: 'dob', label: 'Date of Birth', colSpan: 12 }
-];
-
 
 }

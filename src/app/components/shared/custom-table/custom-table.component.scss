@@ -7,11 +7,12 @@
   overflow-x: auto;
   table-layout: auto;
 
-  th, td {
+  th,
+  td {
     white-space: nowrap;
   }
 }
- 
+
 .card-view {
   display: flex;
   flex-direction: column;
@@ -34,6 +35,7 @@
     display: none;
   }
 }
+
 // ::ng-deep .mat-mdc-form-field-subscript-wrapper {
 //   margin-top: 0 !important;
 //   padding-top: 0 !important;
@@ -51,7 +53,7 @@
   table-layout: auto;
 }
 
- 
+
 .table-scroll {
   overflow-x: auto;
   width: 100%;
@@ -91,7 +93,7 @@
 ::ng-deep mat-paginator {
   margin-bottom: 20px; // or whatever avoids cutting
 }
- 
+
 
 
 .icon-info {
@@ -121,13 +123,13 @@
   border-radius: 50%;
   padding: 4px;
 }
- 
+
 
 .action-icon {
   border-radius: 50%;
   padding: 2px;
-  font-size: 16px;     // icon size
-  width: 28px;         // button size
+  font-size: 16px; // icon size
+  width: 28px; // button size
   height: 28px;
   display: inline-flex;
   align-items: center;
@@ -150,7 +152,7 @@
     background-color: #ffa726;
   }
 }
- 
+
 .custom-input {
   height: 32px;
   width: 100%;
@@ -165,8 +167,10 @@
 
 /* Increase border thickness when focused */
 .custom-input:focus {
-  border: 2px solid red; /* Angular Material primary blue */
-  outline: none; /* Removes default blue glow */
+  border: 2px solid red;
+  /* Angular Material primary blue */
+  outline: none;
+  /* Removes default blue glow */
 }
 
 .page-header {
@@ -186,26 +190,27 @@
 }
 
 .add-button {
-  background-color: #4caf50 !important;  /* Green */
+  background-color: #4caf50 !important;
+  /* Green */
   color: white;
   font-weight: 600;
 }
 
 .add-button:hover {
-  background-color: #45a049; /* Darker green */
+  background-color: #45a049;
+  /* Darker green */
 }
 
-// .page-title {
-//   font-size: 24px;
-//   font-weight: 600;
-//   margin: 0;
-//   color: #333;
-//   font-family: 'Roboto', sans-serif;
-//   letter-spacing: 0.5px;
-// }
-
+ 
 .page-title {
   border-bottom: 2px solid #4caf50 !important;
   display: inline-block;
   padding-bottom: 4px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid green;
+  letter-spacing: 0.5px;
 }

@@ -7,6 +7,7 @@ import { SettingsComponent } from './components/settings/settings.component';
 import { PasswordChangeComponent } from './components/settings/password-change/password-change.component';
 import { NewUserComponent } from './components/settings/new-user/new-user.component';
 import { UserPermissionComponent } from './components/settings/user-permission/user-permission.component';
+import { NewProductComponent } from './components/product-list/new-product/new-product.component';
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
@@ -15,6 +16,7 @@ export const routes: Routes = [
     children: [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'product-list', component: ProductListComponent },
+      { path: 'new-product', component: NewProductComponent },
       {
         path: 'setting',
         component: SettingsComponent,
