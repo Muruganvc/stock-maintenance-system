@@ -8,11 +8,14 @@ import { PasswordChangeComponent } from './components/settings/password-change/p
 import { NewUserComponent } from './components/settings/new-user/new-user.component';
 import { UserPermissionComponent } from './components/settings/user-permission/user-permission.component';
 import { NewProductComponent } from './components/product-list/new-product/new-product.component';
+import { UserListComponent } from './components/settings/new-user/user-list/user-list.component';
+import { authGuard } from './components/shared/services/auth.guard';
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   {
     path: '', component: LayoutComponent,
+    canActivate: [authGuard],
     children: [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'product-list', component: ProductListComponent },
@@ -26,6 +29,7 @@ export const routes: Routes = [
 
           { path: 'change-password', component: PasswordChangeComponent },
           { path: 'user-permission', component: UserPermissionComponent },
+          { path: 'user-list', component: UserListComponent },
           { path: 'add-user', component: NewUserComponent }
         ]
       }

@@ -6,13 +6,17 @@
     <span class="toolbar-title">My App</span>
     <span class="spacer"></span>
 
-    <button mat-icon-button aria-label="Favorite">
+    <!-- <button mat-icon-button aria-label="Favorite">
         <i class="material-icons">favorite</i>
     </button>
 
     <button mat-icon-button aria-label="Share">
         <i class="material-icons">share</i>
-    </button>
+    </button> -->
+<button mat-icon-button  matTooltip="Sign Out" (click)="logout()" aria-label="input">
+    <i class="material-icons">input</i>
+</button>
+     
 </mat-toolbar>
 
 <mat-sidenav-container class="main-container">
@@ -23,7 +27,7 @@
         <router-outlet />
     </mat-sidenav-content>
 </mat-sidenav-container>
- <!-- Footer -->
+<!-- Footer -->
 <footer class="footer">
     &copy; 2025 Your Company
 </footer>

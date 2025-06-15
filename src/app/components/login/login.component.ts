@@ -8,6 +8,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { UserService } from '../shared/services/user.service';
+import { AuthService } from '../shared/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -28,7 +30,7 @@ import { Router } from '@angular/router';
 export class LoginComponent {
   loginForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private snackBar: MatSnackBar, private router: Router) {
+  constructor(private fb: FormBuilder, private snackBar: MatSnackBar, private router: Router, private userService: UserService, private authService: AuthService) {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required]
@@ -36,15 +38,20 @@ export class LoginComponent {
   }
 
   onSubmit(): void {
-    if (this.loginForm.valid) {
-      this.showSuccessMessage();
-      this.router.navigate(['/dashboard']);
-      console.log('Login data:', this.loginForm.value);
-    } else {
-      this.showErrorMessage();
+    if (this.loginForm.invalid) {
+      this.showErrorMessage('Please fill all fields');
+      return;
     }
-  }
+    const { username, password } = this.loginForm.value;
 
+    this.authService.login(username, password).subscribe(success => {
+      if (success) {
+        this.router.navigate(['/dashboard']);
+      } else {
+        this.snackBar.open('Invalid login credentials', 'Close', { duration: 3000 });
+      }
+    });
+  }
   showSuccessMessage() {
     this.snackBar.open('Login successful!', 'Close', {
       duration: 3000,
@@ -54,8 +61,8 @@ export class LoginComponent {
     });
   }
 
-  showErrorMessage() {
-    this.snackBar.open('Invalid credentials', 'Dismiss', {
+  showErrorMessage(msg: string) {
+    this.snackBar.open(msg, 'Dismiss', {
       duration: 4000,
       verticalPosition: 'bottom',
       horizontalPosition: 'center',

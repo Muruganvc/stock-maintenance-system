@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, input, Input, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -11,6 +11,12 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatAutocompleteModule, MatAutocomplete } from '@angular/material/autocomplete';
+
+import { AppNumberOnlyDirective } from '../directives/app-number-only.directive';
+import { Observable, map, startWith } from 'rxjs';
+import { AppSentenceCaseDirective } from '../directives/app-sentence-case.directive';
+
 @Component({
   selector: 'app-dynamic-form',
   standalone: true,
@@ -26,7 +32,9 @@ import { MatButtonModule } from '@angular/material/button';
     MatNativeDateModule,
     MatSlideToggleModule,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    MatAutocompleteModule,
+    AppNumberOnlyDirective, AppSentenceCaseDirective
   ],
   templateUrl: './dynamic-form.component.html',
   styleUrl: './dynamic-form.component.scss'
@@ -34,21 +42,83 @@ import { MatButtonModule } from '@angular/material/button';
 export class DynamicFormComponent {
   @Input() formGroup!: FormGroup;
   @Input() fields: any[] = [];
-  title = input.required<string>();
-  @Output() cancelEvent = new EventEmitter<string>();
+  @Output() cancelEvent = new EventEmitter();
+  @Input({ required: true }) title!: string;
+  @Output() submitEvent = new EventEmitter<FormGroup>();
+  @Input({ required: true }) submitBtntitle!: string;
 
-  ngOnInit() {
-    for (const field of this.fields) {
-      if (!this.formGroup.contains(field.name)) {
-        this.formGroup.addControl(field.name, new FormControl(''));
+  filteredOptions: { [key: string]: Observable<string[]> } = {};
+  autoRefs: { [key: string]: MatAutocomplete } = {};
+  constructor(private cdr: ChangeDetectorRef) { }
+  ngAfterViewInit(): void {
+    // Ensure Angular re-checks the template with the latest filteredOptions bindings
+    this.cdr.detectChanges();
+  }
+
+  ngOnInit(): void {
+    this.fields.forEach(field => {
+      this.formGroup.addControl(field.name, new FormControl(null));
+
+      if (field.type === 'autocomplete' && field.options) {
+        const control = this.formGroup.get(field.name)!;
+        this.filteredOptions[field.name] = control.valueChanges.pipe(
+          startWith(''),
+          map(value => value || ''),
+          map(value =>
+            value.length >= 2 ? this._filter(value, field.options) : []
+          )
+        );
       }
-    }
+    });
+
+    this.setupFieldMirroring();
+  }
+
+  private _filter(value: string, options: string[]): string[] {
+    const filterValue = value.toLowerCase();
+    return options.filter(option => option.toLowerCase().includes(filterValue));
+  }
+
+  displayFn(value: string): string {
+    return value ?? '';
+  }
+
+  registerAuto(name: string, ref: MatAutocomplete): boolean {
+    this.autoRefs[name] = ref;
+    return true;
+  }
+
+  onAutoCompleteSelect(event: any, fieldName: string) {
+    // Optional hook for selection logic
+    // console.log('Selected:', event.option.value, 'for', fieldName);
   }
 
   submitForm() {
-    console.log(this.formGroup.value);
+    if (this.formGroup.valid) {
+      this.submitEvent.emit(this.formGroup);
+    }
   }
-  cancel = () => {
-    this.cancelEvent.emit('cancel');
+
+  cancel (){
+     this.cancelEvent.emit();
+  }
+
+  private setupFieldMirroring() {
+    this.fields.forEach(field => {
+      if (field.mirrorTo) {
+        const source = this.formGroup.get(field.name);
+        const target = this.formGroup.get(field.mirrorTo);
+        if (source && target) {
+          let previous = 0;
+          source.valueChanges.subscribe(val => {
+            const current = Number(val) || 0;
+            const delta = current - previous;
+            const total = Number(target.value) || 0;
+            target.setValue(total + delta, { emitEvent: false });
+            previous = current;
+          });
+        }
+      }
+    });
   }
 }

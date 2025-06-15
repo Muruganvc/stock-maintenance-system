@@ -53,3 +53,20 @@ mat-sidenav {
     box-shadow: 0 8px 10px rgba(0, 0, 0, 0.2);
     border-radius: 0 !important;
 }
+
+.logout-icon {
+  background-color: #e53935;
+  color: white;
+  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  padding: 4px;
+
+  i.material-icons {
+    font-size: 20px;
+  }
+
+  &:hover {
+    background-color: #c62828;
+  }
+}

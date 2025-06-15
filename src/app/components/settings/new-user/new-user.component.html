@@ -1,1 +1,1 @@
-<app-dynamic-form [formGroup]="form" [fields]="fields" [title] ="'New User'"></app-dynamic-form>
+<app-dynamic-form [formGroup]="form" [fields]="fields" [title] ="'New User'" [submitBtntitle] ='submitBtntitle' (cancelEvent)="cancel($event)" (submitEvent)="handleSubmit($event)" ></app-dynamic-form>

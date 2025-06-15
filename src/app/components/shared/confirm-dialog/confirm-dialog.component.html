@@ -1,0 +1,17 @@
+<div class="dialog-container">
+    <div class="dialog-header">
+        <i class="material-icons icon">help_outline</i>
+        <h2>{{ data.title }}</h2>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="dialog-content">
+        <p>{{ data.message }}</p>
+    </div>
+
+    <div class="dialog-actions">
+        <button mat-stroked-button class="custom-cancel-btn" (click)="onCancel()">Cancel</button>
+        <button mat-flat-button class="custom-confirm-btn" (click)="onConfirm()">Yes, Confirm</button>
+    </div>
+</div>

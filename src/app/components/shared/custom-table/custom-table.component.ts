@@ -7,11 +7,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { SelectionModel } from '@angular/cdk/collections';
+import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatIconModule } from '@angular/material/icon'
 import { LayoutModule } from '@angular/cdk/layout';
 import { MatExpansionModule } from '@angular/material/expansion';
+
 export interface TableRow {
   id: string | number;
   [key: string]: any;
@@ -123,8 +123,9 @@ export class CustomTableComponent<T extends TableRow> implements OnChanges {
   }
 
   startEdit(row: T) {
-    this.editRowId = row.id;
-    this.editedRow = { ...row };
+    // this.editRowId = row.id;
+    // this.editedRow = { ...row };
+    this.edit.emit(row);
   }
 
   saveRow() {
@@ -149,6 +150,7 @@ export class CustomTableComponent<T extends TableRow> implements OnChanges {
 
   isEditing(row: T) {
     return this.editRowId === row.id;
+
   }
   getIconClass(type: string): string {
     switch (type) {

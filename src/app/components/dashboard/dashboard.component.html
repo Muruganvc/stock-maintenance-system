@@ -1,1 +1,102 @@
-<p>dashboard works!</p>
+<div class="invoice-ui">
+    <div class="invoice-header">
+        <div>
+            <h2>{{ company.name }}</h2>
+            <p>{{ company.address }}</p>
+        </div>
+        <!-- <img [src]="base64Logo" width="100" height="200" alt="Logo" /> -->
+    </div>
+
+    <div class="bill-to">
+        <h3>Invoice</h3>
+        <p><strong>Customer:</strong> {{ customer.name }}</p>
+        <p>{{ customer.address }}</p>
+        <p><strong>Date:</strong> {{ today | date: 'dd/MM/yyyy' }}</p>
+    </div>
+
+    <table mat-table [dataSource]="pagedItems" class="invoice-table mat-elevation-z2">
+        <ng-container matColumnDef="index">
+            <th mat-header-cell *matHeaderCellDef>#</th>
+            <td mat-cell *matCellDef="let item; let i = index">{{ currentPage * pageSize + i + 1 }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Item</th>
+            <td mat-cell *matCellDef="let item">{{ item.name }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="qty">
+            <th mat-header-cell *matHeaderCellDef>Qty</th>
+            <td mat-cell *matCellDef="let item">{{ item.qty }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="rate">
+            <th mat-header-cell *matHeaderCellDef>Rate</th>
+            <td mat-cell *matCellDef="let item">{{ item.rate }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="total">
+            <th mat-header-cell *matHeaderCellDef>Total</th>
+            <td mat-cell *matCellDef="let item">{{ item.qty * item.rate }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['index', 'name', 'qty', 'rate', 'total']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['index', 'name', 'qty', 'rate', 'total']"></tr>
+    </table>
+
+    <mat-paginator [length]="items.length" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 20, 50]"
+        (page)="onPageChange($event)">
+    </mat-paginator>
+
+    <div class="totals">
+        <p>Total (All Pages): ₹{{ totalAmount }}</p>
+    </div>
+
+    <div class="print-btn">
+        <button mat-flat-button color="primary" (click)="printInvoice()">Print Full Invoice</button>
+    </div>
+</div>
+
+<!-- PRINT VIEW -->
+<div id="print-all" style="display: none;">
+    <div class="invoice-header">
+        <div>
+            <h2>{{ company.name }}</h2>
+            <p>{{ company.address }}</p>
+        </div>
+        <!-- <img [src]="base64Logo" alt="Logo" /> -->
+    </div>
+
+    <div class="invoice-section">
+        <p><strong>Customer:</strong> {{ customer.name }}</p>
+        <p>{{ customer.address }}</p>
+        <p><strong>Date:</strong> {{ today | date: 'dd/MM/yyyy' }}</p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Rate</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let item of items; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.qty }}</td>
+                <td>{{ item.rate }}</td>
+                <td>{{ item.qty * item.rate }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="totals">
+        <p>Total Amount: ₹{{ totalAmount }}</p>
+        <p>Total Amount: ₹{{ totalAmount }}</p>
+        <p>Total Amount: ₹{{ totalAmount }}</p>
+    </div>
+</div>

@@ -32,7 +32,7 @@ export class CustomSidenavComponent {
         {
           icon: 'person',
           label: 'Add new user',
-          route: 'add-user'
+          route: 'user-list'
         },
         {
           icon: 'add_shopping_cart',
