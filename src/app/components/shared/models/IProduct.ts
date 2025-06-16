@@ -14,3 +14,9 @@ export interface IProduct extends TableRow {
     purchaseDate?: Date;
     isWarranty: boolean;
 }
+
+export interface IProductCompanyResponse {
+    productCompanyId: number;
+    companyName: string;
+    productName: string;
+}

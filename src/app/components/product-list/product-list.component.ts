@@ -30,13 +30,13 @@ export class ProductListComponent implements OnInit {
   products: IProduct[] = [];
 
   getProducts() {
-    this.productService.getAll().snapshotChanges().subscribe(actions => {
-      this.products = actions.map(action => {
-        const data = action.payload.val() as IProduct;
-        const key = action.key;
-        return { key, ...data };
-      });
-    });
+    // this.productService.getAll().snapshotChanges().subscribe(actions => {
+    //   this.products = actions.map(action => {
+    //     const data = action.payload.val() as IProduct;
+    //     const key = action.key;
+    //     return { key, ...data };
+    //   });
+    // });
   } 
 
   columns: { key: string; label: string; align: 'left' | 'center' | 'right' }[] = [
@@ -76,7 +76,7 @@ export class ProductListComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.productService.delete(key);
+        // this.productService.delete(key);
       }
     });
   }

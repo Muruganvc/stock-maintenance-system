@@ -25,22 +25,44 @@
           </mat-form-field>
 
           <!-- Autocomplete -->
-          <mat-form-field *ngSwitchCase="'autocomplete'" appearance="outline">
+          <!-- <mat-form-field *ngSwitchCase="'autocomplete'" appearance="outline">
             <mat-label>{{ field.label }}</mat-label>
 
-            <input type="text" matInput [formControlName]="field.name" [matAutocomplete]="autoRefs[field.name]"
+            <input type="text" matInput [formControlName]="field.name" [matAutocomplete]="auto"
               [attr.maxlength]="field.maxLength || null" [readonly]="field.isReadOnly" />
 
             <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn"
               (optionSelected)="onAutoCompleteSelect($event, field.name)">
-              <mat-option *ngFor="let option of (filteredOptions[field.name] | async)" [value]="option">
-                {{ option }}
+              <mat-option *ngFor="let option of (filteredOptions[field.name] | async)" [value]="option.value">
+                {{ option.label }}
               </mat-option>
             </mat-autocomplete>
+          </mat-form-field> -->
 
-            <!-- Hidden element to assign the reference to map -->
-            <ng-container *ngIf="registerAuto(field.name, auto)"></ng-container>
-          </mat-form-field>
+          <mat-form-field *ngSwitchCase="'autocomplete'" appearance="outline">
+  <mat-label>{{ field.label }}</mat-label>
+
+  <input
+    type="text"
+    matInput
+    [formControlName]="field.name"
+    [matAutocomplete]="autoRefs[field.name]"
+    [readonly]="field.isReadOnly"
+    [attr.maxlength]="field.maxLength || null"
+  />
+
+  <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn"
+    (optionSelected)="onAutoCompleteSelect($event, field.name)">
+    <mat-option *ngFor="let option of (filteredOptions[field.name] | async)" [value]="option">
+      {{ option.label }}
+    </mat-option>
+  </mat-autocomplete>
+  
+  <!-- Hidden element to assign the reference to map -->
+  <ng-container *ngIf="registerAuto(field.name, auto)"></ng-container>
+  </mat-form-field>
+
+
 
 
           <!-- Password -->

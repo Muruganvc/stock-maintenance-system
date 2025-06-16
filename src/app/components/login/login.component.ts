@@ -7,8 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
-import { UserService } from '../shared/services/user.service';
+import { Router } from '@angular/router'; 
 import { AuthService } from '../shared/services/auth.service';
 
 @Component({
@@ -30,7 +29,9 @@ import { AuthService } from '../shared/services/auth.service';
 export class LoginComponent {
   loginForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private snackBar: MatSnackBar, private router: Router, private userService: UserService, private authService: AuthService) {
+  constructor(private fb: FormBuilder, private snackBar: MatSnackBar, private router: Router, 
+    // private userService: UserService,
+     private authService: AuthService) {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required]
@@ -38,12 +39,11 @@ export class LoginComponent {
   }
 
   onSubmit(): void {
-    if (this.loginForm.invalid) {
+     if (this.loginForm.invalid) {
       this.showErrorMessage('Please fill all fields');
       return;
     }
     const { username, password } = this.loginForm.value;
-
     this.authService.login(username, password).subscribe(success => {
       if (success) {
         this.router.navigate(['/dashboard']);

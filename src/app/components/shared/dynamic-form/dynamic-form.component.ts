@@ -11,7 +11,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatAutocompleteModule, MatAutocomplete } from '@angular/material/autocomplete';
+import { MatAutocompleteModule, MatAutocomplete, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 
 import { AppNumberOnlyDirective } from '../directives/app-number-only.directive';
 import { Observable, map, startWith } from 'rxjs';
@@ -47,11 +47,12 @@ export class DynamicFormComponent {
   @Output() submitEvent = new EventEmitter<FormGroup>();
   @Input({ required: true }) submitBtntitle!: string;
 
-  filteredOptions: { [key: string]: Observable<string[]> } = {};
-  autoRefs: { [key: string]: MatAutocomplete } = {};
+  filteredOptions: { [key: string]: Observable<any[]> } = {};
+  autoRefs: { [key: string]: any } = {};
+
   constructor(private cdr: ChangeDetectorRef) { }
+
   ngAfterViewInit(): void {
-    // Ensure Angular re-checks the template with the latest filteredOptions bindings
     this.cdr.detectChanges();
   }
 
@@ -60,37 +61,48 @@ export class DynamicFormComponent {
       this.formGroup.addControl(field.name, new FormControl(null));
 
       if (field.type === 'autocomplete' && field.options) {
-        const control = this.formGroup.get(field.name)!;
-        this.filteredOptions[field.name] = control.valueChanges.pipe(
-          startWith(''),
-          map(value => value || ''),
-          map(value =>
-            value.length >= 2 ? this._filter(value, field.options) : []
-          )
-        );
+        const control = this.formGroup.get(field.name);
+        if (control instanceof FormControl) {
+          this.filteredOptions[field.name] = control.valueChanges.pipe(
+            startWith(''),
+            map(value => this._filter(value, field.options))
+          );
+          if (field.defaultKey !== undefined && field.options) {
+            const defaultOption = field.options.find((opt: any) => opt.value === field.defaultKey);
+            if (defaultOption) {
+              control.setValue(defaultOption);
+            }
+          }
+        }
       }
     });
 
     this.setupFieldMirroring();
   }
 
-  private _filter(value: string, options: string[]): string[] {
-    const filterValue = value.toLowerCase();
-    return options.filter(option => option.toLowerCase().includes(filterValue));
+  private _filter(value: string | any, options: any[]): any[] {
+    if (!value || !options?.length) return [];
+    const filterValue =
+      typeof value === 'string' ? value.toLowerCase() : value.label?.toLowerCase() || '';
+    return options.filter(opt => opt.label?.toLowerCase().includes(filterValue));
   }
 
-  displayFn(value: string): string {
-    return value ?? '';
+  displayFn(value: any): string {
+    if (!value) return '';
+    if (typeof value === 'object') {
+      return value.label ?? value.name ?? value.value ?? '';
+    }
+    return '';
   }
 
-  registerAuto(name: string, ref: MatAutocomplete): boolean {
+  registerAuto(name: string, ref: any): boolean {
     this.autoRefs[name] = ref;
     return true;
   }
 
-  onAutoCompleteSelect(event: any, fieldName: string) {
-    // Optional hook for selection logic
-    // console.log('Selected:', event.option.value, 'for', fieldName);
+  onAutoCompleteSelect(event: MatAutocompleteSelectedEvent, fieldName: string): void {
+    const selected = event.option.value;
+    this.formGroup.get(fieldName)?.setValue(selected);
   }
 
   submitForm() {
@@ -99,8 +111,8 @@ export class DynamicFormComponent {
     }
   }
 
-  cancel (){
-     this.cancelEvent.emit();
+  cancel() {
+    this.cancelEvent.emit();
   }
 
   private setupFieldMirroring() {

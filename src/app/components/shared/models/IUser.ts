@@ -12,3 +12,17 @@ export interface IUser extends TableRow {
     isActive: boolean
     superAdmin: boolean;
 }
+
+export interface ILoginRequest {
+    userName: string;
+    password: string;
+}
+
+export class ILoginResponse {
+    userId: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    userName: string;
+    token: string;
+}

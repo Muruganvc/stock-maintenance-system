@@ -210,3 +210,14 @@ mat-form-field {
     }
   }
 }
+
+::ng-deep .filter-container {
+  padding: 8px 16px;
+}
+
+::ng-deep .filter-container input {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 14px;
+}

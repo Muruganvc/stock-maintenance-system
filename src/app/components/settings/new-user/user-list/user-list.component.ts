@@ -39,13 +39,13 @@ export class UserListComponent implements OnInit {
 
 
   getAllUser() {
-    this.userService.getAll().snapshotChanges().subscribe(actions => {
-      this.user = actions.map(action => {
-        const data = action.payload.val() as IUser;
-        const key = action.key;
-        return { key, ...data };
-      });
-    });
+    // this.userService.getAll().snapshotChanges().subscribe(actions => {
+    //   this.user = actions.map(action => {
+    //     const data = action.payload.val() as IUser;
+    //     const key = action.key;
+    //     return { key, ...data };
+    //   });
+    // });
   }
   onDelete(user: IUser) {
     // this.products = this.products.filter(u => u.id !== user.id);
@@ -64,7 +64,7 @@ export class UserListComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.userService.delete(key);
+        // this.userService.delete(key);
       }
     });
   }

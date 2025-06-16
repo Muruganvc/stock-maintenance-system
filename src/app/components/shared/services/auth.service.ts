@@ -1,29 +1,28 @@
 import { Injectable } from '@angular/core';
-import { IUser } from '../models/IUser';
+import { ILoginRequest, ILoginResponse, IUser } from '../models/IUser';
 import { UserService } from './user.service';
 import { Router } from '@angular/router';
-import { map, Observable, take } from 'rxjs';
+import { map, Observable, of, take } from 'rxjs';
+import { ApiService } from './api.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private currentUser: IUser | null = null;
-  constructor(private userService: UserService, private router: Router) { }
+  private currentUser: ILoginResponse | null = null;
+  constructor(private apiService: ApiService<ILoginRequest>, private router: Router) { }
   login(username: string, password: string): Observable<boolean> {
-    return this.userService.getByUserName(username).valueChanges().pipe(
+
+    return this.apiService.post<ILoginResponse>('user-login', { userName: username, password: password }).pipe(
       take(1),
       map(users => {
-        if (users.length === 0) return false;
-        const user = users[0];
-        if (user.password !== password) return false;
-
-        this.currentUser = user;
-        localStorage.setItem('user', JSON.stringify(user));
+        this.currentUser = users.data;
+        localStorage.setItem('token', JSON.stringify(users.data.token));
         return true;
       })
     );
   }
+
   logout(): void {
     this.currentUser = null;
     localStorage.removeItem('user');
@@ -34,17 +33,17 @@ export class AuthService {
     return !!this.getCurrentUser();
   }
 
-  getCurrentUser(): IUser | null {
+  getCurrentUser(): ILoginResponse | null {
     if (this.currentUser) return this.currentUser;
     const stored = localStorage.getItem('user');
     return stored ? JSON.parse(stored) : null;
   }
 
-  getUserRole(): string | null {
-    return this.getCurrentUser()?.role ?? null;
-  }
+  // getUserRole(): string | null {
+  //   return this.getCurrentUser()?.role ?? null;
+  // }
 
-  isSuperAdmin(): boolean {
-    return this.getCurrentUser()?.superAdmin ?? false;
-  }
+  // isSuperAdmin(): boolean {
+  //   return this.getCurrentUser()?.superAdmin ?? false;
+  // }
 }

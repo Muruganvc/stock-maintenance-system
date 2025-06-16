@@ -103,30 +103,30 @@ export class NewUserComponent {
       isActive: value.isActice ?? true  // align with `isActice`
     };
 
-    this.userService.getByUserName(value.userName).valueChanges().subscribe(users => {
-      if (users.length > 0) {
-        this.showErrorMessage('User already exists.');
-        return;
-      }
-      if (this.formMode === 'new') {
-        this.userService.create(newUser).then(() => {
-          this.showSuccessMessage('New user created.');
-          form.reset(); // optional: reset form after create
-        }).catch(err => {
-          this.showErrorMessage('Failed to create user.');
-          console.error(err);
-        });
-      }
-      else if (this.formMode === 'edit') {
-        this.userService.update(this.user['key'], newUser).then(() => {
-          this.showSuccessMessage('User details updated.');
-        }).catch(err => {
-          this.showErrorMessage('Failed to update user.');
-          console.error(err);
-        });
-      }
+    // // this.userService.getByUserName(value.userName).valueChanges().subscribe(users => {
+    // //   if (users.length > 0) {
+    // //     this.showErrorMessage('User already exists.');
+    // //     return;
+    // //   }
+    // //   if (this.formMode === 'new') {
+    // //     this.userService.create(newUser).then(() => {
+    // //       this.showSuccessMessage('New user created.');
+    // //       form.reset(); // optional: reset form after create
+    // //     }).catch(err => {
+    // //       this.showErrorMessage('Failed to create user.');
+    // //       console.error(err);
+    // //     });
+    // //   }
+    // //   else if (this.formMode === 'edit') {
+    // //     this.userService.update(this.user['key'], newUser).then(() => {
+    // //       this.showSuccessMessage('User details updated.');
+    // //     }).catch(err => {
+    // //       this.showErrorMessage('Failed to update user.');
+    // //       console.error(err);
+    // //     });
+    // //   }
 
-    });
+    // // });
     this.router.navigate(['/setting/user-list']);
   }
 
