@@ -9,6 +9,8 @@ import { CommonModule } from '@angular/common';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router'; 
 import { AuthService } from '../shared/services/auth.service';
+import { encryptPassword } from '../shared/common';
+import { DataService } from '../shared/services/data.service';
 
 @Component({
   selector: 'app-login',
@@ -29,7 +31,7 @@ import { AuthService } from '../shared/services/auth.service';
 export class LoginComponent {
   loginForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private snackBar: MatSnackBar, private router: Router, 
+  constructor(private fb: FormBuilder, private snackBar: MatSnackBar, private router: Router, private dataService : DataService, 
     // private userService: UserService,
      private authService: AuthService) {
     this.loginForm = this.fb.group({

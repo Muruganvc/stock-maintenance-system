@@ -57,21 +57,25 @@ export class DynamicFormComponent {
   }
 
   ngOnInit(): void {
+    if (!this.fields || this.fields.length === 0) return;
+
     this.fields.forEach(field => {
       this.formGroup.addControl(field.name, new FormControl(null));
 
-      if (field.type === 'autocomplete' && field.options) {
-        const control = this.formGroup.get(field.name);
-        if (control instanceof FormControl) {
-          this.filteredOptions[field.name] = control.valueChanges.pipe(
-            startWith(''),
-            map(value => this._filter(value, field.options))
+      if (field.type === 'autocomplete' && Array.isArray(field.options)) {
+        const control = this.formGroup.get(field.name) as FormControl;
+
+        this.filteredOptions[field.name] = control.valueChanges.pipe(
+          startWith(''),
+          map(value => this._filter(value, field.options))
+        );
+
+        if (field.defaultKey !== undefined) {
+          const defaultOption = field.options.find(
+            (opt: any) => opt.value === field.defaultKey
           );
-          if (field.defaultKey !== undefined && field.options) {
-            const defaultOption = field.options.find((opt: any) => opt.value === field.defaultKey);
-            if (defaultOption) {
-              control.setValue(defaultOption);
-            }
+          if (defaultOption) {
+            control.setValue(defaultOption);
           }
         }
       }

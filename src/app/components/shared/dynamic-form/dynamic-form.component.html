@@ -1,132 +1,104 @@
 <form [formGroup]="formGroup">
-  <h2 class="form-title">{{title}}</h2>
+  <h2 class="form-title">{{ title }}</h2>
+
   <div class="form-grid">
     <ng-container *ngFor="let field of fields">
-      <div class="form-field" [ngClass]="'col-span-' + field.colSpan">
-        <ng-container [ngSwitch]="field.type">
+      <ng-container *ngIf="!field.isHidden">
+        <div class="form-field" [ngClass]="'col-span-' + field.colSpan">
+          <ng-container [ngSwitch]="field.type">
 
-          <!-- Input -->
-          <mat-form-field *ngSwitchCase="'input'" appearance="outline">
-            <mat-label>{{ field.label }}</mat-label>
-            <input appAppSentenceCase [appNumberOnly]="field.isNumOnly" [readonly]="field.isReadOnly"
-              [attr.maxlength]="field.maxLength || null" matInput [formControlName]="field.name" />
-            <mat-error *ngIf="formGroup.get(field.name)?.hasError('required')">
-              {{ field.label }} is required
-            </mat-error>
-            <mat-error *ngIf="formGroup.get(field.name)?.hasError('email')">
-              Please enter a valid email
-            </mat-error>
-            <mat-error *ngIf="formGroup.get(field.name)?.hasError('minlength')">
-              Minimum {{ formGroup.get(field.name)?.errors?.['minlength']?.requiredLength }} characters required
-            </mat-error>
-            <mat-error *ngIf="formGroup.get(field.name)?.hasError('pattern')">
-              Invalid {{ field.label }}
-            </mat-error>
-          </mat-form-field>
+            <!-- Input -->
+            <mat-form-field *ngSwitchCase="'input'" appearance="outline">
+              <mat-label>{{ field.label }}</mat-label>
+              <input appAppSentenceCase [appNumberOnly]="field.isNumOnly" [readonly]="field.isReadOnly"
+                [attr.maxlength]="field.maxLength || null" matInput [formControlName]="field.name" />
+              <mat-error *ngIf="formGroup.get(field.name)?.hasError('required')">
+                {{ field.label }} is required
+              </mat-error>
+              <mat-error *ngIf="formGroup.get(field.name)?.hasError('email')">
+                Please enter a valid email
+              </mat-error>
+              <mat-error *ngIf="formGroup.get(field.name)?.hasError('minlength')">
+                Minimum {{ formGroup.get(field.name)?.errors?.['minlength']?.requiredLength }} characters required
+              </mat-error>
+              <mat-error *ngIf="formGroup.get(field.name)?.hasError('pattern')">
+                Invalid {{ field.label }}
+              </mat-error>
+            </mat-form-field>
 
-          <!-- Autocomplete -->
-          <!-- <mat-form-field *ngSwitchCase="'autocomplete'" appearance="outline">
-            <mat-label>{{ field.label }}</mat-label>
+            <!-- Autocomplete -->
+            <mat-form-field *ngSwitchCase="'autocomplete'" appearance="outline">
+              <mat-label>{{ field.label }}</mat-label>
+              <input type="text" matInput [formControlName]="field.name" [matAutocomplete]="autoRefs[field.name]"
+                [readonly]="field.isReadOnly" [attr.maxlength]="field.maxLength || null" />
+              <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn"
+                (optionSelected)="onAutoCompleteSelect($event, field.name)">
+                <mat-option *ngFor="let option of (filteredOptions[field.name] | async)" [value]="option">
+                  {{ option.label }}
+                </mat-option>
+              </mat-autocomplete>
+              <ng-container *ngIf="registerAuto(field.name, auto)"></ng-container>
+            </mat-form-field>
 
-            <input type="text" matInput [formControlName]="field.name" [matAutocomplete]="auto"
-              [attr.maxlength]="field.maxLength || null" [readonly]="field.isReadOnly" />
+            <!-- Password -->
+            <mat-form-field *ngSwitchCase="'password'" appearance="outline">
+              <mat-label>{{ field.label }}</mat-label>
+              <input matInput type="password" [formControlName]="field.name" />
+            </mat-form-field>
 
-            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn"
-              (optionSelected)="onAutoCompleteSelect($event, field.name)">
-              <mat-option *ngFor="let option of (filteredOptions[field.name] | async)" [value]="option.value">
-                {{ option.label }}
-              </mat-option>
-            </mat-autocomplete>
-          </mat-form-field> -->
+            <!-- Select -->
+            <mat-form-field *ngSwitchCase="'select'" appearance="outline">
+              <mat-label>{{ field.label }}</mat-label>
+              <mat-select [formControlName]="field.name">
+                <mat-option *ngFor="let opt of field.options" [value]="opt.value">
+                  {{ opt.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
 
-          <mat-form-field *ngSwitchCase="'autocomplete'" appearance="outline">
-  <mat-label>{{ field.label }}</mat-label>
+            <!-- Date -->
+            <mat-form-field *ngSwitchCase="'date'" appearance="outline">
+              <mat-label>{{ field.label }}</mat-label>
+              <input matInput [matDatepicker]="picker" [formControlName]="field.name" />
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
 
-  <input
-    type="text"
-    matInput
-    [formControlName]="field.name"
-    [matAutocomplete]="autoRefs[field.name]"
-    [readonly]="field.isReadOnly"
-    [attr.maxlength]="field.maxLength || null"
-  />
+            <!-- Checkbox -->
+            <div *ngSwitchCase="'checkbox'" class="form-control-wrapper">
+              <label class="form-label">{{ field.label }}</label>
+              <mat-checkbox [formControlName]="field.name"></mat-checkbox>
+            </div>
 
-  <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn"
-    (optionSelected)="onAutoCompleteSelect($event, field.name)">
-    <mat-option *ngFor="let option of (filteredOptions[field.name] | async)" [value]="option">
-      {{ option.label }}
-    </mat-option>
-  </mat-autocomplete>
-  
-  <!-- Hidden element to assign the reference to map -->
-  <ng-container *ngIf="registerAuto(field.name, auto)"></ng-container>
-  </mat-form-field>
+            <!-- Radio -->
+            <div *ngSwitchCase="'radio'" class="form-control-wrapper">
+              <label class="form-label">{{ field.label }}</label>
+              <mat-radio-group [formControlName]="field.name">
+                <mat-radio-button *ngFor="let opt of field.options" [value]="opt.value">
+                  {{ opt.label }}
+                </mat-radio-button>
+              </mat-radio-group>
+            </div>
 
+            <!-- Toggle -->
+            <div *ngSwitchCase="'toggle'" class="form-control-wrapper">
+              <label class="form-label">{{ field.label }}</label>
+              <mat-slide-toggle [formControlName]="field.name"></mat-slide-toggle>
+            </div>
 
-
-
-          <!-- Password -->
-          <mat-form-field *ngSwitchCase="'password'" appearance="outline">
-            <mat-label>{{ field.label }}</mat-label>
-            <input matInput type="password" [formControlName]="field.name" />
-          </mat-form-field>
-
-          <!-- Select -->
-          <mat-form-field *ngSwitchCase="'select'" appearance="outline">
-            <mat-label>{{ field.label }}</mat-label>
-            <mat-select [formControlName]="field.name">
-              <mat-option *ngFor="let opt of field.options" [value]="opt.value">
-                {{ opt.label }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-
-          <!-- Date -->
-          <mat-form-field *ngSwitchCase="'date'" appearance="outline">
-            <mat-label>{{ field.label }}</mat-label>
-            <input matInput [matDatepicker]="picker" [formControlName]="field.name" />
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-          </mat-form-field>
-
-          <!-- Checkbox -->
-          <div *ngSwitchCase="'checkbox'" class="form-control-wrapper">
-            <label class="form-label">{{ field.label }}</label>
-            <mat-checkbox [formControlName]="field.name"></mat-checkbox>
-          </div>
-
-          <!-- Radio -->
-          <div *ngSwitchCase="'radio'" class="form-control-wrapper">
-            <label class="form-label">{{ field.label }}</label>
-            <mat-radio-group [formControlName]="field.name">
-              <mat-radio-button *ngFor="let opt of field.options" [value]="opt.value">
-                {{ opt.label }}
-              </mat-radio-button>
-            </mat-radio-group>
-          </div>
-
-          <!-- Toggle -->
-          <div *ngSwitchCase="'toggle'" class="form-control-wrapper">
-            <label class="form-label">{{ field.label }}</label>
-            <mat-slide-toggle [formControlName]="field.name"></mat-slide-toggle>
-          </div>
-
-        </ng-container>
-      </div>
+          </ng-container>
+        </div>
+      </ng-container>
     </ng-container>
   </div>
+
   <div class="button-group">
     <button mat-flat-button (click)="submitForm()" class="btn-submit">
-      <i class="material-icons">check_circle</i> &nbsp; {{submitBtntitle}}
+      <i class="material-icons">check_circle</i> &nbsp; {{ submitBtntitle }}
     </button>
 
     <button mat-flat-button (click)="cancel()" class="btn-cancel">
       <i class="material-icons">cancel</i> &nbsp; Cancel
     </button>
-
-    <!-- <button mat-flat-button class="btn-warn">
-      <i class="material-icons">delete</i> &nbsp; Delete
-    </button> -->
   </div>
-
 </form>

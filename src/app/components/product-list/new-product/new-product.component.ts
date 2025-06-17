@@ -83,40 +83,11 @@ export class NewProductComponent implements OnInit {
     }
 
     this.loadAllCompanies();
-    // this.setupCompanyAutocomplete();
     this.setupProductAutocomplete();
-    this.setupFieldMirroring();
+    // this.setupFieldMirroring();
   }
 
-  // loadAllCompanies(): void {
-  //   this.productService.getProduct('').subscribe(response => {
-  //     const uniqueCompanies = Array.from(
-  //       new Map(
-  //         response.data.map(c => [c.productCompanyId, {
-  //           value: { id: c.productCompanyId, name: c.companyName },
-  //           label: c.companyName
-  //         }])
-  //       ).values()
-  //     );
-  //     this.updateFieldOptions('company', uniqueCompanies);
-  //   });
-  // }
-
-  // loadAllCompanies(): void {
-  //   this.productService.getCompany().subscribe(response => {
-  //     this.company = response.data;
-  //     const uniqueCompanies = Array.from(
-  //       new Map(
-  //         response.data.map(c => [c.value, {
-  //           value: { id: c.value, name: c.key },
-  //           label: c.key
-  //         }])
-  //       ).values()
-  //     );
-  //     this.updateFieldOptions('company', uniqueCompanies);
-  //   });
-  // }
-
+ 
   loadAllCompanies(): void {
     this.productService.getCompany().subscribe(response => {
       this.company = response.data;
@@ -135,56 +106,7 @@ export class NewProductComponent implements OnInit {
   }
 
 
-  setupCompanyAutocomplete(): void {
-    const companyCtrl = this.formGroup.get('company');
-    if (!companyCtrl) return;
-
-    companyCtrl.valueChanges.subscribe(value => {
-      if (!value) {
-        this.formGroup.get('productName')?.reset();
-        this.updateFieldOptions('productName', []);
-      }
-    });
-
-    companyCtrl.valueChanges.pipe(
-      debounceTime(200),
-      distinctUntilChanged(),
-      switchMap(value => this.productService.getProduct(1))
-    ).subscribe(response => {
-      const uniqueCompanies = Array.from(
-        new Map(
-          response.data.map(c => [c.productCompanyId, {
-            value: { id: c.productCompanyId, name: c.companyName },
-            label: c.companyName
-          }])
-        ).values()
-      );
-      this.updateFieldOptions('company', uniqueCompanies);
-    });
-  }
-
-  // setupProductAutocomplete(): void {
-  //   const companyCtrl = this.formGroup.get('company');
-  //   const productCtrl = this.formGroup.get('productName');
-  //   if (!companyCtrl || !productCtrl) return;
-
-  //   productCtrl.valueChanges.pipe(
-  //     debounceTime(200),
-  //     distinctUntilChanged(),
-  //     switchMap(productValue => {
-  //       const companyValue = companyCtrl.value?.name || companyCtrl.value || '';
-  //       return this.productService.getProduct(companyValue, productValue || '');
-  //     })
-  //   ).subscribe(response => {
-  //     const uniqueProducts = Array.from(
-  //       new Map(
-  //         response.data.map(p => [p.productName, { value: { id: p.productCompanyId, name: p.productName }, label: p.productName }])
-  //       ).values()
-  //     );
-  //     this.updateFieldOptions('productName', uniqueProducts);
-  //   });
-  // }
-
+   
   setupProductAutocomplete(): void {
     const companyCtrl = this.formGroup.get('company');
     const productCtrl = this.formGroup.get('productName');

@@ -10,6 +10,7 @@ import { UserPermissionComponent } from './components/settings/user-permission/u
 import { NewProductComponent } from './components/product-list/new-product/new-product.component';
 import { UserListComponent } from './components/settings/new-user/user-list/user-list.component';
 import { authGuard } from './components/shared/services/auth.guard';
+import { SalesComponent } from './components/sales/sales.component';
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
@@ -20,6 +21,7 @@ export const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'product-list', component: ProductListComponent },
       { path: 'new-product', component: NewProductComponent },
+      { path: 'sales', component: SalesComponent },
       {
         path: 'setting',
         component: SettingsComponent,

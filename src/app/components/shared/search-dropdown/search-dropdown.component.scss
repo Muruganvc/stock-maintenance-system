@@ -1,0 +1,22 @@
+.w-100 {
+  width: 100%;
+}
+
+.filter-container {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 8px;
+  background-color: white;
+  border-bottom: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.filter-input {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.23);
+  border-radius: 4px;
+  outline: none;
+}

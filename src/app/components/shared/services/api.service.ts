@@ -13,7 +13,7 @@ export type ApiHeaders = Record<string, string>;
 export type ApiParams = Record<string, string | number | boolean | Array<string | number | boolean>>;
 
 @Injectable({ providedIn: 'root' })
-export class ApiService<TRequest> {
+export class ApiService {
   private readonly baseUrl = 'https://localhost:7012/';
   constructor(private readonly http: HttpClient) { }
   private createHeaders(headers?: ApiHeaders): HttpHeaders {
@@ -69,7 +69,7 @@ export class ApiService<TRequest> {
       .pipe(catchError(this.handleError));
   }
 
-  post<TResponse>(
+  post<TRequest,TResponse>(
     url: string,
     body: TRequest,
     params?: ApiParams,
@@ -83,7 +83,7 @@ export class ApiService<TRequest> {
       .pipe(catchError(this.handleError));
   }
 
-  put<TResponse>(
+  put<TRequest,TResponse>(
     url: string,
     body: TRequest,
     params?: ApiParams,
@@ -97,7 +97,7 @@ export class ApiService<TRequest> {
       .pipe(catchError(this.handleError));
   }
 
-  patch<TResponse>(
+  patch<TRequest,TResponse>(
     url: string,
     body: TRequest,
     params?: ApiParams,

@@ -7,7 +7,7 @@ import { KeyValuePair } from '../models/IKeyValuePair';
   providedIn: 'root'
 })
 export class ProductService {
-  constructor(private readonly api: ApiService<string>) {}
+  constructor(private readonly api: ApiService) {}
 
   getProduct(companyId: number) {
     return this.api.get<IProductCompanyResponse[]>(`product-company?companyId=${companyId}`);

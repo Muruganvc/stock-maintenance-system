@@ -1,0 +1,109 @@
+/* Utility Classes */
+.w-100 {
+  width: 100%;
+}
+
+.m-0 {
+  margin: 0;
+}
+
+/* Full width mat-form-field */
+mat-form-field.mat-form-field {
+  padding: 0;
+  width: 100%;
+  margin: 0;
+}
+
+/* Mat select panel styles */
+.custom-select-panel .mat-mdc-select-panel {
+  padding-top: 0 !important;
+  // width: 100vw !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+  overflow-y: auto !important;
+  max-height: 240px !important;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+ 
+
+/* Filter container */
+// .filter-container {
+//   position: sticky;
+//   top: 0;
+//   z-index: 1;
+//   padding: 8px;
+//   background-color: #fff;
+//   border-bottom: 1px solid #e0e0e0;
+//   box-sizing: border-box;
+// }
+
+.filter-container {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 8px;
+  background-color: white;
+  border-bottom: 1px solid #ccc;
+  box-sizing: border-box;
+  
+}
+
+/* Styled material-like input */
+.filter-container mat-form-field {
+  width: 100%;
+  margin: 0;
+}
+
+.filter-container input.mat-input-element {
+  font-size: 14px;
+  padding: 4px 0;
+  font-family: Roboto, sans-serif;
+}
+
+/* Search icon styling */
+.filter-container .mat-icon {
+  color: #757575;
+  margin-right: 8px;
+}
+
+/* Option item content */
+.option-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: Roboto, sans-serif;
+}
+
+.option-content img {
+  width: 18px;
+  height: 12px;
+  object-fit: cover;
+  margin-right: 4px;
+}
+
+/* Responsive tweaks */
+@media (max-width: 600px) {
+  .filter-container {
+    padding: 6px;
+  }
+
+  .filter-container input.mat-input-element {
+    font-size: 13px;
+  }
+
+  .custom-select-panel .mat-mdc-select-panel {
+    max-height: 60vh;
+  }
+
+  mat-option {
+    font-size: 14px;
+  }
+}
+
+/* Make mat-select always full width */
+::ng-deep .mat-mdc-select {
+  width: 100% !important;
+}
+
+ 
