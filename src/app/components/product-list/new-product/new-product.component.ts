@@ -32,10 +32,10 @@ export class NewProductComponent implements OnInit {
   ) {
     this.formGroup = new FormGroup({
       productName: new FormControl('', [Validators.required]),
-      company: new FormControl('1', [Validators.required]),
+      company: new FormControl(1, [Validators.required]),
       model: new FormControl(null),
       maximumRetailPrice: new FormControl('', [Validators.required]),
-      salesPrice: new FormControl('', [Validators.required]),
+      salesPrice: new FormControl('100', [Validators.required]),
       length: new FormControl(''),
       quantity: new FormControl('', [Validators.required]),
       totalQuantity: new FormControl(),
@@ -51,14 +51,8 @@ export class NewProductComponent implements OnInit {
         name: 'company',
         label: 'New Company Name',
         colSpan: 12,
-        defaultKey: 1,
         options: [] 
-        // options: [
-        //   { label: 'Lisha', value: 1 },
-        //   { label: 'GM', value: 2 }
-        // ]
       },
-      { type: 'autocomplete', name: 'productName', label: 'Product Name', colSpan: 6, options: [] },
       { type: 'input', name: 'model', label: 'Model', colSpan: 6, maxLength: 30 },
       { type: 'input', name: 'maximumRetailPrice', label: 'Maximum retail price ₹', colSpan: 3, isNumOnly: true, maxLength: 8 },
       { type: 'input', name: 'salesPrice', label: 'Sales Price ₹', colSpan: 3, isNumOnly: true, maxLength: 8 },

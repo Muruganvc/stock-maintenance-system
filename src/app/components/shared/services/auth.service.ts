@@ -28,7 +28,7 @@ export class AuthService {
       take(1),
       switchMap(userResponse => {
         this.setSession(userResponse.data);
-        
+
         return this.loadUserPermissions();
       })
     );
@@ -53,19 +53,13 @@ export class AuthService {
     }
     this.dataService.updateCurrentUser(this.currentUser);
     return this.currentUser;
-  }
+  } 
 
-  // hasAccess(path: string): boolean {
-  //   const route = path.replace(/^\//, '');
-  //   return this.allowedRoutes.has(route);
-  // }
-
- 
-   hasAccess(path: string): boolean {
+  hasAccess(path: string): boolean {
     const route = path.replace(/^\//, '').toLowerCase();
     return this.allowedRoutes.has(route);
   }
-  
+
   getMenuRoutes(): string[] {
     return Array.from(this.allowedRoutes);
   }
@@ -83,6 +77,11 @@ export class AuthService {
         return true;
       })
     );
+  }
+
+
+getToken(): string | null {
+    return localStorage.getItem('token');
   }
 
   // --------------------

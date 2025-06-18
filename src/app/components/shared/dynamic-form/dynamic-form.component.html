@@ -27,7 +27,7 @@
             </mat-form-field>
 
             <!-- Autocomplete -->
-            <mat-form-field *ngSwitchCase="'autocomplete'" appearance="outline">
+            <!-- <mat-form-field *ngSwitchCase="'autocomplete'" appearance="outline">
               <mat-label>{{ field.label }}</mat-label>
               <input type="text" matInput [formControlName]="field.name" [matAutocomplete]="autoRefs[field.name]"
                 [readonly]="field.isReadOnly" [attr.maxlength]="field.maxLength || null" />
@@ -38,7 +38,7 @@
                 </mat-option>
               </mat-autocomplete>
               <ng-container *ngIf="registerAuto(field.name, auto)"></ng-container>
-            </mat-form-field>
+            </mat-form-field> -->
 
             <!-- Password -->
             <mat-form-field *ngSwitchCase="'password'" appearance="outline">
@@ -52,9 +52,9 @@
                 [options]="field.options" [formControlName]="field.name" [control]="getControl(field.name)">
               </app-searchable-select> -->
 
-                <app-searchable-select [formControlName]="field.name" [label]="field.label" [control]="getControl(field.name)" [placeholder]="field.label"
-                  [options]="field.options">
-                </app-searchable-select>
+              <app-searchable-select [formControlName]="field.name" [label]="field.label"
+                [placeholder]="field.placeholder || 'Search...'" [options]="field.options">
+              </app-searchable-select>
 
             </ng-container>
 

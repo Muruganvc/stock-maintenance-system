@@ -7,22 +7,41 @@
 }
 
 .search-wrapper {
-  padding: 8px 12px;
+  // padding: 8px 12px;
   pointer-events: auto;
 }
 
 ::ng-deep .custom-select-panel .mat-option {
   height: auto;
-  min-height: 40px;
+  min-height: 38px;
   font-size: 14px;
 }
 
 @media (max-width: 768px) {
-  .search-wrapper {
-    padding: 4px 8px;
-  }
+  // .search-wrapper {
+  //   padding: 4px 8px;
+  // }
 
   .dropdown-search input {
     font-size: 14px;
   }
+}
+
+::ng-deep .mat-option.active {
+  background-color: #e0f7fa;
+}
+
+.dropdown-search input {
+  background-color: transparent !important;
+  color: inherit; /* Optional: matches text color to parent */
+  box-shadow: none !important;
+}
+
+div.mat-mdc-select-panel{
+      max-height: 265px !important;
+}
+
+::ng-deep .mat-mdc-select-panel {
+  max-height: none !important;  // Disable default limit
+  height: 200px !important;     // Set your custom height
 }

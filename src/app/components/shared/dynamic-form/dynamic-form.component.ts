@@ -1,6 +1,7 @@
+// dynamic-form.component.ts
 import { ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -11,17 +12,17 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatAutocompleteModule, MatAutocomplete, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 
 import { AppNumberOnlyDirective } from '../directives/app-number-only.directive';
 import { Observable, map, startWith } from 'rxjs';
 import { AppSentenceCaseDirective } from '../directives/app-sentence-case.directive';
-import { SearchableSelectComponent } from "../search-dropdown/searchable-select.component";
+import { SearchableSelectComponent } from '../search-dropdown/searchable-select.component';
 
 @Component({
   selector: 'app-dynamic-form',
   standalone: true,
-  imports: [
+  imports: [FormsModule,
     CommonModule,
     ReactiveFormsModule,
     MatFormFieldModule,
@@ -50,65 +51,42 @@ export class DynamicFormComponent {
   @Input({ required: true }) submitBtntitle!: string;
 
   filteredOptions: { [key: string]: Observable<any[]> } = {};
-  autoRefs: { [key: string]: any } = {};
 
-  constructor(private cdr: ChangeDetectorRef) { }
-
-  ngAfterViewInit(): void {
-    this.cdr.detectChanges();
-  }
+  constructor(private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
-    if (!this.fields || this.fields.length === 0) return;
-
     this.fields.forEach(field => {
-      this.formGroup.addControl(field.name, new FormControl(null));
+      const defaultValue = this.getDefaultFieldValue(field); // Get default value before adding control
+      this.formGroup.addControl(field.name, new FormControl(defaultValue)); 
 
       if (field.type === 'autocomplete' && Array.isArray(field.options)) {
         const control = this.formGroup.get(field.name) as FormControl;
-
         this.filteredOptions[field.name] = control.valueChanges.pipe(
           startWith(''),
           map(value => this._filter(value, field.options))
         );
-
-        if (field.defaultKey !== undefined) {
-          const defaultOption = field.options.find(
-            (opt: any) => opt.value === field.defaultKey
-          );
-          if (defaultOption) {
-            control.setValue(defaultOption);
-          }
-        }
       }
     });
+  }
 
-    this.setupFieldMirroring();
+  
+  
+  private getDefaultFieldValue(field: any): any {
+    if (!field.defaultValue) return null;
+    if (['autocomplete', 'searchable-select'].includes(field.type)) {
+      return field.options?.find((opt: any) => opt.value === field.defaultValue) ?? null;
+    }
+    return field.defaultValue;
   }
 
   private _filter(value: string | any, options: any[]): any[] {
     if (!value || !options?.length) return [];
-    const filterValue =
-      typeof value === 'string' ? value.toLowerCase() : value.label?.toLowerCase() || '';
+    const filterValue = typeof value === 'string' ? value.toLowerCase() : value.label?.toLowerCase() || '';
     return options.filter(opt => opt.label?.toLowerCase().includes(filterValue));
   }
 
   displayFn(value: any): string {
-    if (!value) return '';
-    if (typeof value === 'object') {
-      return value.label ?? value.name ?? value.value ?? '';
-    }
-    return '';
-  }
-
-  registerAuto(name: string, ref: any): boolean {
-    this.autoRefs[name] = ref;
-    return true;
-  }
-
-  onAutoCompleteSelect(event: MatAutocompleteSelectedEvent, fieldName: string): void {
-    const selected = event.option.value;
-    this.formGroup.get(fieldName)?.setValue(selected);
+    return typeof value === 'object' ? value.label ?? '' : '';
   }
 
   submitForm() {
@@ -120,26 +98,4 @@ export class DynamicFormComponent {
   cancel() {
     this.cancelEvent.emit();
   }
-  getControl(name: string): FormControl {
-    return this.formGroup.get(name) as FormControl;
-  }
-
-  private setupFieldMirroring() {
-    this.fields.forEach(field => {
-      if (field.mirrorTo) {
-        const source = this.formGroup.get(field.name);
-        const target = this.formGroup.get(field.mirrorTo);
-        if (source && target) {
-          let previous = 0;
-          source.valueChanges.subscribe(val => {
-            const current = Number(val) || 0;
-            const delta = current - previous;
-            const total = Number(target.value) || 0;
-            target.setValue(total + delta, { emitEvent: false });
-            previous = current;
-          });
-        }
-      }
-    });
-  }
-}
+} // end component
