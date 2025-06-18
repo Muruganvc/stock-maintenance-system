@@ -1,7 +1,8 @@
 import { Component, Input, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
-import { MenuItem } from '../custom-sidenav/custom-sidenav.component';
+import { MenuItem } from '../shared/models/IUser';
+// import { MenuItem } from '../custom-sidenav/custom-sidenav.component';
 
 @Component({
   selector: 'app-menu-item',

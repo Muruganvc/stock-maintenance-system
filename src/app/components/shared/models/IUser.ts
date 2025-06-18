@@ -18,7 +18,7 @@ export interface ILoginRequest {
     password: string;
 }
 
-export class ILoginResponse {
+export interface ILoginResponse {
     userId: number;
     firstName: string;
     lastName: string;
@@ -26,3 +26,12 @@ export class ILoginResponse {
     userName: string;
     token: string;
 }
+
+
+
+export type MenuItem = {
+  icon: string;
+  label: string;
+  route?: string;
+  subMenuItem?: MenuItem[];
+};

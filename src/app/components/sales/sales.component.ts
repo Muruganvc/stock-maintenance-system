@@ -4,11 +4,8 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule, MatSelect } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
-import { MatOptionModule } from '@angular/material/core';
-import { ButtonModule } from 'primeng/button';
-import { SelectModule } from 'primeng/select';
-import { FormsModule } from '@angular/forms';
-import { DropdownModule } from 'primeng/dropdown';
+import { MatOptionModule } from '@angular/material/core'; 
+import { FormsModule } from '@angular/forms'; 
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
@@ -20,11 +17,9 @@ import { MatIconModule } from '@angular/material/icon';
     MatFormFieldModule,
     MatSelectModule,
     MatInputModule,
-    MatOptionModule,
-    ButtonModule,
-    SelectModule,
+    MatOptionModule, 
     FormsModule,
-    DropdownModule, MatIconModule
+    MatIconModule
   ],
   templateUrl: './sales.component.html',
   styleUrl: './sales.component.scss'

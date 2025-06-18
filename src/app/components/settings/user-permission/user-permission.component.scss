@@ -1,0 +1,63 @@
+.scroll-table-wrapper {
+  max-height: 70vh;
+  overflow-y: auto;
+  border: 1px solid #e0e0e0;
+  padding: 0 8px;
+}
+
+table {
+  width: 100%;
+  min-width: 600px; // Prevents collapsing too much
+}
+
+.mat-column-permission {
+  width: 100px;
+}
+
+.menu-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.menu-icon {
+  font-size: 20px;
+}
+
+.menu-label {
+  font-weight: 500;
+}
+
+// Responsive tweak for mobile
+@media (max-width: 768px) {
+  table {
+    min-width: 100%;
+    display: block;
+    overflow-x: auto;
+  }
+
+  .scroll-table-wrapper {
+    max-height: calc(100vh - 200px);
+    overflow: auto;
+  }
+
+  .menu-cell {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+
+
+.mat-column-permission {
+  width: 60px; // or even 50px depending on your design
+  min-width: 50px;
+  text-align: center;
+}
+.menu-icon {
+  font-size: 15px;
+
+  // Hide icon on small screens
+  @media (max-width: 600px) {
+    display: none;
+  }
+}

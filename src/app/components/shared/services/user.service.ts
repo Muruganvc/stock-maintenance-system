@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { ApiService } from './api.service';
-import { IUser } from '../models/IUser';
+import { IUser, MenuItem } from '../models/IUser';
 import { IUserList } from '../models/IUserList';
 
 import { ApiResponse } from '../models/ApiResponse';
@@ -38,5 +38,17 @@ export class UserService {
     return this.api
       .get<IUserList[]>('users')
       .pipe(map((res: ApiResponse<IUserList[]>) => res.data));
+  }
+
+  getUserMenu(userId: number): Observable<MenuItem[]> {
+    return this.api
+      .get<MenuItem[]>(`menus/${userId}`)
+      .pipe(map((res: ApiResponse<MenuItem[]>) => res.data));
+  }
+
+  getAllMenu(): Observable<MenuItem[]> {
+    return this.api
+      .get<MenuItem[]>(`menus`)
+      .pipe(map((res: ApiResponse<MenuItem[]>) => res.data));
   }
 }

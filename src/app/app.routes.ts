@@ -11,6 +11,7 @@ import { NewProductComponent } from './components/product-list/new-product/new-p
 import { UserListComponent } from './components/settings/new-user/user-list/user-list.component';
 import { authGuard } from './components/shared/services/auth.guard';
 import { SalesComponent } from './components/sales/sales.component';
+import { AccessDeniedComponent } from './components/access-denied/access-denied.component';
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
@@ -36,6 +37,8 @@ export const routes: Routes = [
         ]
       }
     ]
-  }
+  },
+  { path: 'access-denied', component: AccessDeniedComponent },
+   { path: '**', redirectTo: 'access-denied' }
 ];
 
