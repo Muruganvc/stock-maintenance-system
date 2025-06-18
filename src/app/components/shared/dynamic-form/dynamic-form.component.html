@@ -46,6 +46,18 @@
               <input matInput type="password" [formControlName]="field.name" />
             </mat-form-field>
 
+            <!-- Searchable Select -->
+            <ng-container *ngSwitchCase="'searchable-select'">
+              <!-- <app-searchable-select [label]="field.label" [placeholder]="field.placeholder || 'Search...'"
+                [options]="field.options" [formControlName]="field.name" [control]="getControl(field.name)">
+              </app-searchable-select> -->
+
+                <app-searchable-select [formControlName]="field.name" [label]="field.label" [control]="getControl(field.name)" [placeholder]="field.label"
+                  [options]="field.options">
+                </app-searchable-select>
+
+            </ng-container>
+
             <!-- Select -->
             <mat-form-field *ngSwitchCase="'select'" appearance="outline">
               <mat-label>{{ field.label }}</mat-label>

@@ -1,0 +1,28 @@
+.full-width {
+  width: 100%;
+}
+
+.dropdown-search {
+  width: 100%;
+}
+
+.search-wrapper {
+  padding: 8px 12px;
+  pointer-events: auto;
+}
+
+::ng-deep .custom-select-panel .mat-option {
+  height: auto;
+  min-height: 40px;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .search-wrapper {
+    padding: 4px 8px;
+  }
+
+  .dropdown-search input {
+    font-size: 14px;
+  }
+}

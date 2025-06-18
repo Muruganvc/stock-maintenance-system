@@ -47,17 +47,17 @@ export class NewProductComponent implements OnInit {
   ngOnInit(): void {
     this.fields = [
       {
-        name: 'companyPRoduct',
-        label: 'Company Name',
-        type: 'autocomplete',
+        type: 'searchable-select',
+        name: 'company',
+        label: 'New Company Name',
         colSpan: 12,
         defaultKey: 1,
-        options: [
-          { label: 'Lisha', value: 1 },
-          { label: 'GM', value: 2 },
-        ]
+        options: [] 
+        // options: [
+        //   { label: 'Lisha', value: 1 },
+        //   { label: 'GM', value: 2 }
+        // ]
       },
-      { type: 'autocomplete', name: 'company', label: 'Company', colSpan: 6, options: [] },
       { type: 'autocomplete', name: 'productName', label: 'Product Name', colSpan: 6, options: [] },
       { type: 'input', name: 'model', label: 'Model', colSpan: 6, maxLength: 30 },
       { type: 'input', name: 'maximumRetailPrice', label: 'Maximum retail price ₹', colSpan: 3, isNumOnly: true, maxLength: 8 },
@@ -87,7 +87,7 @@ export class NewProductComponent implements OnInit {
     // this.setupFieldMirroring();
   }
 
- 
+
   loadAllCompanies(): void {
     this.productService.getCompany().subscribe(response => {
       this.company = response.data;
@@ -105,8 +105,6 @@ export class NewProductComponent implements OnInit {
     });
   }
 
-
-   
   setupProductAutocomplete(): void {
     const companyCtrl = this.formGroup.get('company');
     const productCtrl = this.formGroup.get('productName');

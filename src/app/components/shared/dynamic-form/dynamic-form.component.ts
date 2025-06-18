@@ -16,6 +16,7 @@ import { MatAutocompleteModule, MatAutocomplete, MatAutocompleteSelectedEvent } 
 import { AppNumberOnlyDirective } from '../directives/app-number-only.directive';
 import { Observable, map, startWith } from 'rxjs';
 import { AppSentenceCaseDirective } from '../directives/app-sentence-case.directive';
+import { SearchableSelectComponent } from "../search-dropdown/searchable-select.component";
 
 @Component({
   selector: 'app-dynamic-form',
@@ -34,7 +35,8 @@ import { AppSentenceCaseDirective } from '../directives/app-sentence-case.direct
     MatIconModule,
     MatButtonModule,
     MatAutocompleteModule,
-    AppNumberOnlyDirective, AppSentenceCaseDirective
+    AppNumberOnlyDirective, AppSentenceCaseDirective,
+    SearchableSelectComponent
   ],
   templateUrl: './dynamic-form.component.html',
   styleUrl: './dynamic-form.component.scss'
@@ -117,6 +119,9 @@ export class DynamicFormComponent {
 
   cancel() {
     this.cancelEvent.emit();
+  }
+  getControl(name: string): FormControl {
+    return this.formGroup.get(name) as FormControl;
   }
 
   private setupFieldMirroring() {

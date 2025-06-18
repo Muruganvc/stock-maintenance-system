@@ -1,0 +1,28 @@
+<mat-form-field appearance="outline" class="full-width">
+  <mat-label>{{ label }}</mat-label>
+
+  <mat-select [formControl]="control" (selectionChange)="onSelectionChange($event.value)"
+    (openedChange)="onDropdownOpened($event)" panelClass="custom-select-panel">
+    <!-- Search input -->
+    <div class="search-wrapper" (click)="$event.stopPropagation()">
+      <mat-form-field appearance="outline" class="dropdown-search">
+        <mat-label>{{ placeholder }}</mat-label>
+        <input matInput #searchBoxInput [(ngModel)]="searchText" (ngModelChange)="filterOptions(searchBoxInput.value)"
+          (keydown)="onKeyDown($event)" type="search" autocomplete="off" />
+      </mat-form-field>
+    </div>
+
+    <!-- Options -->
+    <ng-container *ngIf="filteredOptions.length > 0; else noOptions">
+      <mat-option *ngFor="let option of filteredOptions; let i = index" [value]="option.value"
+        [class.active]="i === activeIndex">
+        <span>{{option.label}}</span>
+      </mat-option>
+    </ng-container>
+
+    <!-- No match fallback -->
+    <ng-template #noOptions>
+      <mat-option disabled>No matching options</mat-option>
+    </ng-template>
+  </mat-select>
+</mat-form-field>
