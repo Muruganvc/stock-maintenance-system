@@ -11,6 +11,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatIconModule } from '@angular/material/icon'
 import { LayoutModule } from '@angular/cdk/layout';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 export interface TableRow {
   id: string | number;
@@ -21,6 +22,8 @@ export interface TableColumn {
   key: string;
   label: string;
   align?: 'left' | 'center' | 'right';
+  type?: string;
+  isHidden: boolean;
 }
 
 @Component({
@@ -35,7 +38,7 @@ export interface TableColumn {
     MatInputModule,
     MatCardModule,
     MatButtonModule, MatIconModule,
-    LayoutModule, MatExpansionModule
+    LayoutModule, MatExpansionModule,MatCheckboxModule
   ],
   templateUrl: './custom-table.component.html',
   styleUrl: './custom-table.component.scss'

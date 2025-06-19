@@ -3,13 +3,16 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  EventEmitter,
   forwardRef,
   Input,
+  Output,
   SimpleChanges,
   ViewChild
 } from '@angular/core';
 import {
   ControlValueAccessor,
+  FormGroup,
   FormsModule,
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule
@@ -17,7 +20,7 @@ import {
 import { MatOptionModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule, MatSelect } from '@angular/material/select';
+import { MatSelectModule, MatSelect, MatSelectChange } from '@angular/material/select';
 
 @Component({
   selector: 'app-searchable-select',
@@ -45,6 +48,8 @@ export class SearchableSelectComponent implements ControlValueAccessor, AfterVie
   @Input() label: string = '';
   @Input() placeholder: string = 'Search...';
   @Input() options: { label: string; value: any }[] = [];
+  @Output() selectionChange = new EventEmitter<MatSelectChange>();
+  // @Input({ required: true }) formGroup!: FormGroup;
 
   @ViewChild('searchBoxInput') searchBoxInput!: ElementRef<HTMLInputElement>;
   @ViewChild(MatSelect) matSelect!: MatSelect;
@@ -68,7 +73,7 @@ export class SearchableSelectComponent implements ControlValueAccessor, AfterVie
     this.value = obj;
   }
 
-    ngOnChanges(changes: SimpleChanges): void {
+  ngOnChanges(changes: SimpleChanges): void {
     if (changes && this.value) {
       this.filteredOptions = [...this.options];
       this.onChange(this.value);
@@ -91,28 +96,28 @@ export class SearchableSelectComponent implements ControlValueAccessor, AfterVie
     }
   }
 
-onKeyDown(event: KeyboardEvent): void {
-  const length = this.filteredOptions.length;
-  if (!length) return;
+  onKeyDown(event: KeyboardEvent): void {
+    const length = this.filteredOptions.length;
+    if (!length) return;
 
-  if (event.key === 'ArrowDown') {
-    event.preventDefault();
-    this.activeIndex = (this.activeIndex + 1) % length;
-  } else if (event.key === 'ArrowUp') {
-    event.preventDefault();
-    this.activeIndex = (this.activeIndex - 1 + length) % length;
-  } else if (event.key === 'Enter') {
-    event.preventDefault();
-    const selected = this.filteredOptions[this.activeIndex];
-    if (selected) {
-      this.value = selected.value;
-      this.onChange(selected.value);
-      this.onTouched();
-      // Remove 
-      //  this.matSelect.close();
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      this.activeIndex = (this.activeIndex + 1) % length;
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      this.activeIndex = (this.activeIndex - 1 + length) % length;
+    } else if (event.key === 'Enter') {
+      event.preventDefault();
+      const selected = this.filteredOptions[this.activeIndex];
+      if (selected) {
+        this.value = selected.value;
+        this.onChange(selected.value);
+        this.onTouched();
+        // Remove 
+        //  this.matSelect.close();
+      }
     }
   }
-}
 
 
   filterOptions(searchText: string): void {
@@ -124,10 +129,11 @@ onKeyDown(event: KeyboardEvent): void {
     this.activeIndex = 0;
   }
 
-  onSelectionChange(value: any): void {
-    this.value = value;
-    this.onChange(value);
+  onSelectionChange(value: MatSelectChange): void {
+    this.value = value.value;
+    this.onChange(value.value);
     this.onTouched();
     this.matSelect.close();
+    this.selectionChange.emit(value);
   }
 }

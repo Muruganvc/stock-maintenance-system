@@ -3,10 +3,10 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { Router } from '@angular/router';
 import { DynamicFormComponent } from '../../shared/dynamic-form/dynamic-form.component';
 import { ProductService } from '../../shared/services/product.service';
-import { IProduct } from '../../shared/models/IProduct';
+import { IProduct} from '../../shared/models/IProduct';
 import { FormMode } from '../../shared/models/formMode';
-import { debounceTime, distinctUntilChanged, filter, switchMap } from 'rxjs';
-import { KeyValuePair } from '../../shared/models/IKeyValuePair';
+import { MatSelectChange } from '@angular/material/select';
+import { IProductTypeRequest, IProductTypeResponse } from '../../shared/models/IProductTypeRequest';
 
 @Component({
   selector: 'app-new-product',
@@ -17,13 +17,10 @@ import { KeyValuePair } from '../../shared/models/IKeyValuePair';
 })
 export class NewProductComponent implements OnInit {
   formGroup!: FormGroup;
-  products: IProduct[] = [];
-  product: IProduct;
   fields: any[] = [];
-  submitBtntitle: string = 'Submit';
+  submitBtntitle = 'Submit';
   formMode: FormMode = 'new';
-
-  company: KeyValuePair[] = [];
+  product: IProductTypeResponse | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -33,45 +30,23 @@ export class NewProductComponent implements OnInit {
     this.formGroup = new FormGroup({
       company: new FormControl(null, [Validators.required]),
       category: new FormControl(null, [Validators.required]),
-      productName: new FormControl(null),
-      maximumRetailPrice: new FormControl('', [Validators.required]),
-      salesPrice: new FormControl('100', [Validators.required]),
+      product: new FormControl(null, [Validators.required]),
+      mrp: new FormControl('', [Validators.required]),
+      salesPrice: new FormControl('', [Validators.required]),
+      taxPercent: new FormControl(''),
       brandName: new FormControl(''),
-      quantity: new FormControl('', [Validators.required]),
-      description: new FormControl(),
-      purchaseDate: new FormControl(),
-      warranty: new FormControl()
+      description: new FormControl('')
     });
   }
 
   ngOnInit(): void {
-    //this.fields = [
-    //   {
-    //     type: 'searchable-select',
-    //     name: 'company',
-    //     label: 'New Company Name',
-    //     colSpan: 12,
-    //     options: [] 
-    //   },
-    //   { type: 'input', name: 'model', label: 'Model', colSpan: 6, maxLength: 30 },
-    //   { type: 'input', name: 'maximumRetailPrice', label: 'Maximum retail price ₹', colSpan: 3, isNumOnly: true, maxLength: 8 },
-    //   { type: 'input', name: 'salesPrice', label: 'Sales Price ₹', colSpan: 3, isNumOnly: true, maxLength: 8 },
-    //   { type: 'input', name: 'length', label: 'Length (m)', colSpan: 6, maxLength: 30 },
-    //   { type: 'input', name: 'quantity', label: 'Quantity', colSpan: 3, isNumOnly: true, mirrorTo: 'totalQuantity', maxLength: 10 },
-    //   { type: 'input', name: 'totalQuantity', label: 'Total Quantity', colSpan: 3, isNumOnly: true, isReadOnly: true },
-    //   { type: 'date', name: 'purchaseDate', label: 'Purchase Date', colSpan: 3 },
-    //   { type: 'checkbox', name: 'warranty', label: 'Warranty Available', colSpan: 3 }
-    // ];
-
     this.fields = [
       { type: 'searchable-select', name: 'company', label: 'Company', colSpan: 3, options: [] },
       { type: 'searchable-select', name: 'category', label: 'Category', colSpan: 3, options: [] },
-      { type: 'searchable-select', name: 'productName', label: 'Product Name', colSpan: 6, options: [] },
+      { type: 'searchable-select', name: 'product', label: 'Product Name', colSpan: 6, options: [] },
       { type: 'input', name: 'mrp', label: 'MRP ₹', colSpan: 3, isNumOnly: true },
       { type: 'input', name: 'salesPrice', label: 'Sales Price ₹', colSpan: 3, isNumOnly: true },
       { type: 'input', name: 'taxPercent', label: 'Tax %', colSpan: 3, isNumOnly: true, maxLength: 2 },
-      // { type: 'input', name: 'taxType', label: 'Tax Type', colSpan: 3 },
-      // { type: 'input', name: 'barcode', label: 'Barcode', colSpan: 3 },
       { type: 'input', name: 'brandName', label: 'Brand Name', colSpan: 3 },
       { type: 'textarea', name: 'description', label: 'Description', colSpan: 12 }
     ];
@@ -86,156 +61,115 @@ export class NewProductComponent implements OnInit {
     if (this.product) {
       this.formMode = 'edit';
       this.submitBtntitle = 'Update';
-      this.formGroup.patchValue(this.product);
+      // this.formGroup.patchValue(this.product);
+      this.formGroup.patchValue({
+        company: this.product.categoryId,
+        category: this.product.categoryId,
+        product: this.product.productTypeId,
+        description: this.product.description,
+        mrp: this.product.mrp,
+        salesPrice: this.product.salesPrice
+        // taxType: this.product.t,
+        // barCode: this.product.barCode,
+        // brandName: this.product.brandName
+      });
     }
-
     this.loadAllCompanies();
-    this.loadCategoryByCompany();
-    // this.setupProductAutocomplete();
-    this.loadProductCategoryByCompany();
-    // this.setupFieldMirroring();
+    this.handleCompanyChange();
+    this.handleCategoryChange();
   }
-
 
   loadAllCompanies(): void {
     this.productService.getCompany().subscribe(response => {
-      this.company = response.data;
+      const companies = response.data.map((c: any) => ({
+        value: c.value,
+        label: c.key
+      }));
+      this.updateFieldOptions('company', companies);
 
-      const uniqueCompanies = Array.from(
-        new Map(
-          response.data.map(c => [c.value, {
-            value: c.value,      // Now it's just the raw ID
-            label: c.key         // The display name
-          }])
-        ).values()
-      );
-
-      this.updateFieldOptions('company', uniqueCompanies);
+      // const currentValue = this.formGroup.get('company')?.value;
+      // const matched = companies.find(c => c.value === currentValue);
+      // if (matched) this.formGroup.get('company')?.setValue(matched.value);
     });
   }
 
-  loadCategoryByCompany(): void {
-    this.productService.getCategories(1).subscribe(response => {
-      this.company = response.data;
+  handleCompanyChange(): void {
+    this.formGroup.get('company')?.valueChanges.subscribe(companyId => {
+      if (!companyId) return;
+      this.productService.getCategories(companyId).subscribe(response => {
+        const categories = response.data.map((c: any) => ({
+          value: c.value,
+          label: c.key
+        }));
+        this.updateFieldOptions('category', categories);
+        // const currentValue = this.formGroup.get('category')?.value;
+        // const matched = categories.find(c => c.value === currentValue);
+        // if (matched) this.formGroup.get('category')?.setValue(matched.value);
 
-      const uniqueCompanies = Array.from(
-        new Map(
-          response.data.map(c => [c.value, {
-            value: c.value,      // Now it's just the raw ID
-            label: c.key         // The display name
-          }])
-        ).values()
-      );
-
-      this.updateFieldOptions('category', uniqueCompanies);
+        // this.formGroup.get('category')?.reset();
+        // this.formGroup.get('productName')?.reset();
+        // this.updateFieldOptions('productName', []);
+      });
     });
   }
 
-  loadProductCategoryByCompany(): void {
-    this.productService.getProductCategories(1).subscribe(response => {
-      this.company = response.data;
+  handleCategoryChange(): void {
+    this.formGroup.get('category')?.valueChanges.subscribe(categoryId => {
+      if (!categoryId) return;
+      this.productService.getProductCategories(categoryId).subscribe(response => {
+        const products = response.data.map((p: any) => ({
+          value: p.value,
+          label: p.key
+        }));
+        this.updateFieldOptions('product', products);
 
-      const uniqueCompanies = Array.from(
-        new Map(
-          response.data.map(c => [c.value, {
-            value: c.value,      // Now it's just the raw ID
-            label: c.key         // The display name
-          }])
-        ).values()
-      );
+        // const currentValue = this.formGroup.get('productName')?.value;
+        // const matched = products.find(c => c.value === currentValue);
+        // if (matched) this.formGroup.get('productName')?.setValue(matched.value);
 
-      this.updateFieldOptions('productName', uniqueCompanies);
+        // this.formGroup.get('productName')?.reset();
+      });
     });
   }
-
-  // setupProductAutocomplete(): void {
-  //   const companyCtrl = this.formGroup.get('company');
-  //   const productCtrl = this.formGroup.get('productName');
-  //   if (!companyCtrl || !productCtrl) return;
-
-  //   productCtrl.valueChanges.pipe(
-  //     debounceTime(200),
-  //     distinctUntilChanged(),
-  //     switchMap(productValue => {
-  //       const selectedCompany = companyCtrl.value;
-
-  //       // Handle both cases: raw ID (e.g. 1) or object { id: 1, name: 'Lisha' }
-  //       const companyId = typeof selectedCompany === 'object' ? selectedCompany.id || selectedCompany.value : selectedCompany;
-
-  //       if (!companyId) return [];
-
-  //       return this.productService.getProduct(companyId);
-  //     })
-  //   ).subscribe(response => {
-  //     const uniqueProducts = Array.from(
-  //       new Map(
-  //         response.data.map(p => [
-  //           p.productName,
-  //           {
-  //             value: p.productCompanyId, // or p.productNameId if that's more accurate
-  //             label: p.productName
-  //           }
-  //         ])
-  //       ).values()
-  //     );
-
-  //     this.updateFieldOptions('productName', uniqueProducts);
-  //   });
-  // }
-
 
   updateFieldOptions(fieldName: string, options: { value: any; label: string }[]): void {
     const field = this.fields.find(f => f.name === fieldName);
     if (field) field.options = options;
   }
 
-  setupFieldMirroring(): void {
-    this.fields.forEach(field => {
-      if (field.mirrorTo) {
-        const source = this.formGroup.get(field.name);
-        const target = this.formGroup.get(field.mirrorTo);
-        if (source && target) {
-          let previous = 0;
-          source.valueChanges.subscribe(val => {
-            const current = Number(val) || 0;
-            const delta = current - previous;
-            const total = Number(target.value) || 0;
-            target.setValue(total + delta, { emitEvent: false });
-            previous = current;
-          });
-        }
-      }
-    });
-  }
-
   handleSubmit(form: FormGroup): void {
     if (form.invalid) return;
     const value = form.value;
-    const product: IProduct = {
-      id: '',
-      productName: value.productName?.name || value.productName,
-      company: value.company?.name || value.company,
-      itemFullName: `${value.productName?.name || value.productName} ${value.company?.name || value.company}`,
-      model: value.model,
-      maximumRetailPrice: value.maximumRetailPrice,
+    const product: IProductTypeRequest = {
+      productName: value.productName?.label || value.productName,
+      companyId :value.company,
+      categoryId: value.company?.label || value.company,
+      description:value.description,
+      mrp: value.mrp,
       salesPrice: value.salesPrice,
-      length: value.length,
-      quantity: value.quantity,
       totalQuantity: value.totalQuantity,
-      purchaseDate: value.purchaseDate || new Date(),
-      isWarranty: value.warranty ?? true,
-      productCompanyId: value.company?.id,
-      productNameId: value.productName?.id
     };
     console.log(product);
-    if (this.formMode == 'new') {
-      // this.productService.create(product).then(a => console.log(a));
-    } else if (this.formMode == 'edit') {
-      // this.productService.update(this.product['key'], product);
+    if (this.formMode === 'new') {
+      // this.productService.create(product).subscribe();
+    } else if (this.formMode === 'edit') {
+      // this.productService.update(this.product?.id, product).subscribe();
     }
   }
 
   cancel(): void {
     this.router.navigate(['/product-list']);
+  }
+
+  dropdownChange(controlName: string, event: MatSelectChange) {
+    if (controlName == 'company') {
+      this.formGroup.get('category')?.reset();
+      this.formGroup.get('product')?.reset();
+      this.updateFieldOptions('category', []);
+      this.updateFieldOptions('product', []);
+    } else if (controlName == 'category') {
+      this.formGroup.get('product')?.reset();
+      this.updateFieldOptions('product', []);
+    }
   }
 }

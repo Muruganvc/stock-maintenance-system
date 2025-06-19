@@ -51,9 +51,9 @@
               <!-- <app-searchable-select [label]="field.label" [placeholder]="field.placeholder || 'Search...'"
                 [options]="field.options" [formControlName]="field.name" [control]="getControl(field.name)">
               </app-searchable-select> -->
-
               <app-searchable-select [formControlName]="field.name" [label]="field.label"
-                [placeholder]="field.placeholder || 'Search...'" [options]="field.options">
+                [placeholder]="field.placeholder || 'Search...'" [options]="field.options"
+                (selectionChange)="matSelectionChange(field.name, $event)">
               </app-searchable-select>
 
             </ng-container>
@@ -100,7 +100,7 @@
 
             <mat-form-field *ngSwitchCase="'textarea'" appearance="outline">
               <mat-label>{{ field.label }}</mat-label>
-              <textarea matInput [formControlName]="field.name"  class="no-resize" [readonly]="field.isReadOnly"
+              <textarea matInput [formControlName]="field.name" class="no-resize" [readonly]="field.isReadOnly"
                 [attr.maxlength]="field.maxLength || null" [rows]="field.rows || 4" appAppSentenceCase
                 [appNumberOnly]="field.isNumOnly" [placeholder]="field.placeholder || ''"></textarea>
             </mat-form-field>

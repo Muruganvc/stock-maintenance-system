@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -48,29 +48,52 @@ export class DynamicFormComponent {
   @Output() cancelEvent = new EventEmitter();
   @Input({ required: true }) title!: string;
   @Output() submitEvent = new EventEmitter<FormGroup>();
+  @Output() selectionChange = new EventEmitter<{controlName : string, matSelectChange : MatSelectChange}>();
   @Input({ required: true }) submitBtntitle!: string;
 
   filteredOptions: { [key: string]: Observable<any[]> } = {};
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(private cdr: ChangeDetectorRef) { }
+
+  getValue(key: string): any {
+    return this.formGroup.get(key)?.value;
+  }
+
+  // ngOnInit(): void {
+  //   this.fields.forEach(field => {
+  //     const defaultValue = this.getDefaultFieldValue(field); // Get default value before adding control
+  //     this.formGroup.addControl(field.name, new FormControl(defaultValue));
+
+  //     if (field.type === 'autocomplete' && Array.isArray(field.options)) {
+  //       const control = this.formGroup.get(field.name) as FormControl;
+  //       this.filteredOptions[field.name] = control.valueChanges.pipe(
+  //         startWith(''),
+  //         map(value => this._filter(value, field.options))
+  //       );
+  //     }
+  //   });
+  // }
 
   ngOnInit(): void {
     this.fields.forEach(field => {
-      const defaultValue = this.getDefaultFieldValue(field); // Get default value before adding control
-      this.formGroup.addControl(field.name, new FormControl(defaultValue)); 
+      // Only add the control if it's not already in the formGroup
+      if (!this.formGroup.get(field.name)) {
+        this.formGroup.addControl(field.name, new FormControl(null));
+      }
 
-      if (field.type === 'autocomplete' && Array.isArray(field.options)) {
+      // Setup filtered options for searchable selects or autocomplete
+      if (['autocomplete', 'searchable-select'].includes(field.type) && Array.isArray(field.options)) {
         const control = this.formGroup.get(field.name) as FormControl;
         this.filteredOptions[field.name] = control.valueChanges.pipe(
-          startWith(''),
+          startWith(control.value || ''),
           map(value => this._filter(value, field.options))
         );
       }
     });
   }
 
-  
-  
+
+
   private getDefaultFieldValue(field: any): any {
     if (!field.defaultValue) return null;
     if (['autocomplete', 'searchable-select'].includes(field.type)) {
@@ -98,4 +121,9 @@ export class DynamicFormComponent {
   cancel() {
     this.cancelEvent.emit();
   }
+
+  matSelectionChange(controlName: string, event: MatSelectChange){
+    this.selectionChange.emit({ controlName: controlName, matSelectChange: event });
+  }
+
 } // end component

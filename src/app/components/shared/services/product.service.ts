@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { IProductCompanyResponse } from '../models/IProduct';
 import { ApiService } from './api.service';
 import { KeyValuePair } from '../models/IKeyValuePair';
+import { IProductTypeResponse, IProductTypeRequest } from '../models/IProductTypeRequest';
 
 @Injectable({
   providedIn: 'root'
@@ -20,13 +21,17 @@ export class ProductService {
 
     return this.api.get<KeyValuePair[]>(url);
   }
-
   getCategories(companyId: number) {
     return this.api.get<KeyValuePair[]>(`category/${companyId}`);
   }
-
   getProductCategories(categoryId: number) {
     return this.api.get<KeyValuePair[]>(`product-category/${categoryId}`);
   }
+  createProductType(productType: IProductTypeRequest) {
+    return this.api.post<IProductTypeRequest, number>('product-company', productType);
+  }
 
+  getProductTypes() {
+    return this.api.get<IProductTypeResponse[]>('products');
+  }
 }

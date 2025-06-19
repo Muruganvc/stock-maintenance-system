@@ -6,9 +6,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
 import { ProductService } from '../shared/services/product.service';
-import { IProduct } from '../shared/models/IProduct';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
+import { IProductTypeResponse } from '../shared/models/IProductTypeRequest';
 
 @Component({
   selector: 'app-product-list',
@@ -16,8 +16,8 @@ import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.
   imports: [
     CommonModule,
     CustomTableComponent,
-    MatFormFieldModule, MatInputModule, MatSelectModule, 
-],
+    MatFormFieldModule, MatInputModule, MatSelectModule,
+  ],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss'
 })
@@ -27,40 +27,42 @@ export class ProductListComponent implements OnInit {
     this.getProducts();
   }
 
-  products: IProduct[] = [];
+  products: IProductTypeResponse[] = [];
 
   getProducts() {
-    // this.productService.getAll().snapshotChanges().subscribe(actions => {
-    //   this.products = actions.map(action => {
-    //     const data = action.payload.val() as IProduct;
-    //     const key = action.key;
-    //     return { key, ...data };
-    //   });
-    // });
-  } 
+    this.productService.getProductTypes().subscribe({
+      next: result => {
+        this.products = result.data;
+      }
+    });
 
-  columns: { key: string; label: string; align: 'left' | 'center' | 'right' }[] = [
-    { key: 'productName', label: 'Product Name', align: 'left' },
-    { key: 'company', label: 'Company', align: 'right' },
-    { key: 'itemFullName', label: 'Item Name', align: 'right' },
-    { key: 'model', label: 'Model', align: 'right' },
-    { key: 'maximumRetailPrice', label: 'Mrp ₹', align: 'right' },
-    { key: 'salesPrice', label: 'Sales Price ₹', align: 'right' },
-    { key: 'length', label: 'Length (m)', align: 'right' },
-    { key: 'quantity', label: 'Quty', align: 'right' },
-    { key: 'totalQuantity', label: 'Total Stock', align: 'right' },
-    { key: 'purchaseDate', label: 'Purchase Date', align: 'right' },
-    { key: 'warranty', label: 'Warranty', align: 'right' }
+    if (true) {
+      this.columns.push(
+        { key: 'isActive', label: 'Active', align: 'right', type: 'checkbox', isHidden: true },
+      );
+    }
+
+  }
+
+  columns: { key: string; label: string; align: 'left' | 'center' | 'right', type?: string, isHidden: boolean }[] = [
+    { key: 'companyName', label: 'Company', align: 'left', isHidden: false },
+    { key: 'categoryName', label: 'Cat.Name', align: 'right', isHidden: false },
+    { key: 'productTypeName', label: 'Prod.Name', align: 'right', isHidden: false },
+    { key: 'description', label: 'Description', align: 'right', isHidden: false },
+    { key: 'mrp', label: 'Mrp ₹', align: 'right', isHidden: false },
+    { key: 'salesPrice', label: 'Mrp ₹', align: 'right', isHidden: false },
+    { key: 'taxPercent', label: 'Tax %', align: 'right', isHidden: false },
+    { key: 'totalQuantity', label: 'Total Quantity', align: 'right', isHidden: false },
+    { key: 'userName', label: 'Creator', align: 'right', isHidden: false }
   ];
 
-  onEdit(product: IProduct) {
+  onEdit(product: IProductTypeResponse) {
     this.router.navigate(['/new-product'], {
       state: { product }
     });
   }
 
-  onDelete(product: IProduct) {
-    // this.products = this.products.filter(u => u.id !== user.id);
+  onDelete(product: IProductTypeResponse) {
     this.openConfirm(product['key']);
   }
 
@@ -76,7 +78,6 @@ export class ProductListComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        // this.productService.delete(key);
       }
     });
   }
