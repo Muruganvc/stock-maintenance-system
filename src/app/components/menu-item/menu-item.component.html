@@ -1,16 +1,16 @@
 <a mat-list-item [routerLink]="item.route" routerLinkActive="active-route selected-menu-item" #rla="routerLinkActive"
   (click)="toggleNested()" [class.hovered]="rla.isActive">
   <!-- <i matListItemIcon class="material-icons">{{ item.icon }}</i> -->
-  <i matListItemIcon [class]="item.icon"></i>
+  <i matListItemIcon class="menu-icon" [class]="item.icon"></i>
   <span matListItemTitle>{{ item.label }}</span>
 
   @if(item.subMenuItem?.length){
   <span matListItemMeta>
     @if (nestedMenuItem()) {
     <!-- <i class="material-icons">expand_less</i> -->
-    <i class="fas fa-chevron-up"></i>
+    <i class="fas fa-chevron-up menu-icon"></i>
     }@else {
-    <i class="fas fa-chevron-down"></i>
+    <i class="fas fa-chevron-down menu-icon"></i>
     }
   </span>
   }
@@ -21,7 +21,7 @@
   @for (subItem of item.subMenuItem; track subItem.label) {
   <a mat-list-item [routerLink]="item.route +'/'+ subItem.route" routerLinkActive="active-route selected-menu-item"
     #rla="routerLinkActive" class="indented" [class.hovered]="rla.isActive">
-    <i matListItemIcon [class]="subItem.icon"></i>
+    <i matListItemIcon class="menu-icon" [class]="subItem.icon"></i>
     <span matListItemTitle>{{ subItem.label }}</span>
   </a>
   }

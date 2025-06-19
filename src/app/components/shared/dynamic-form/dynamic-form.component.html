@@ -98,6 +98,13 @@
               <mat-slide-toggle [formControlName]="field.name"></mat-slide-toggle>
             </div>
 
+            <mat-form-field *ngSwitchCase="'textarea'" appearance="outline">
+              <mat-label>{{ field.label }}</mat-label>
+              <textarea matInput [formControlName]="field.name"  class="no-resize" [readonly]="field.isReadOnly"
+                [attr.maxlength]="field.maxLength || null" [rows]="field.rows || 4" appAppSentenceCase
+                [appNumberOnly]="field.isNumOnly" [placeholder]="field.placeholder || ''"></textarea>
+            </mat-form-field>
+
           </ng-container>
         </div>
       </ng-container>

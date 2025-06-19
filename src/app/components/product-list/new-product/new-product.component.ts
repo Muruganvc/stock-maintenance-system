@@ -31,36 +31,49 @@ export class NewProductComponent implements OnInit {
     private productService: ProductService
   ) {
     this.formGroup = new FormGroup({
-      productName: new FormControl('', [Validators.required]),
-      company: new FormControl(1, [Validators.required]),
-      model: new FormControl(null),
+      company: new FormControl(null, [Validators.required]),
+      category: new FormControl(null, [Validators.required]),
+      productName: new FormControl(null),
       maximumRetailPrice: new FormControl('', [Validators.required]),
       salesPrice: new FormControl('100', [Validators.required]),
-      length: new FormControl(''),
+      brandName: new FormControl(''),
       quantity: new FormControl('', [Validators.required]),
-      totalQuantity: new FormControl(),
+      description: new FormControl(),
       purchaseDate: new FormControl(),
       warranty: new FormControl()
     });
   }
 
   ngOnInit(): void {
+    //this.fields = [
+    //   {
+    //     type: 'searchable-select',
+    //     name: 'company',
+    //     label: 'New Company Name',
+    //     colSpan: 12,
+    //     options: [] 
+    //   },
+    //   { type: 'input', name: 'model', label: 'Model', colSpan: 6, maxLength: 30 },
+    //   { type: 'input', name: 'maximumRetailPrice', label: 'Maximum retail price ₹', colSpan: 3, isNumOnly: true, maxLength: 8 },
+    //   { type: 'input', name: 'salesPrice', label: 'Sales Price ₹', colSpan: 3, isNumOnly: true, maxLength: 8 },
+    //   { type: 'input', name: 'length', label: 'Length (m)', colSpan: 6, maxLength: 30 },
+    //   { type: 'input', name: 'quantity', label: 'Quantity', colSpan: 3, isNumOnly: true, mirrorTo: 'totalQuantity', maxLength: 10 },
+    //   { type: 'input', name: 'totalQuantity', label: 'Total Quantity', colSpan: 3, isNumOnly: true, isReadOnly: true },
+    //   { type: 'date', name: 'purchaseDate', label: 'Purchase Date', colSpan: 3 },
+    //   { type: 'checkbox', name: 'warranty', label: 'Warranty Available', colSpan: 3 }
+    // ];
+
     this.fields = [
-      {
-        type: 'searchable-select',
-        name: 'company',
-        label: 'New Company Name',
-        colSpan: 12,
-        options: [] 
-      },
-      { type: 'input', name: 'model', label: 'Model', colSpan: 6, maxLength: 30 },
-      { type: 'input', name: 'maximumRetailPrice', label: 'Maximum retail price ₹', colSpan: 3, isNumOnly: true, maxLength: 8 },
-      { type: 'input', name: 'salesPrice', label: 'Sales Price ₹', colSpan: 3, isNumOnly: true, maxLength: 8 },
-      { type: 'input', name: 'length', label: 'Length (m)', colSpan: 6, maxLength: 30 },
-      { type: 'input', name: 'quantity', label: 'Quantity', colSpan: 3, isNumOnly: true, mirrorTo: 'totalQuantity', maxLength: 10 },
-      { type: 'input', name: 'totalQuantity', label: 'Total Quantity', colSpan: 3, isNumOnly: true, isReadOnly: true },
-      { type: 'date', name: 'purchaseDate', label: 'Purchase Date', colSpan: 3 },
-      { type: 'checkbox', name: 'warranty', label: 'Warranty Available', colSpan: 3 }
+      { type: 'searchable-select', name: 'company', label: 'Company', colSpan: 3, options: [] },
+      { type: 'searchable-select', name: 'category', label: 'Category', colSpan: 3, options: [] },
+      { type: 'searchable-select', name: 'productName', label: 'Product Name', colSpan: 6, options: [] },
+      { type: 'input', name: 'mrp', label: 'MRP ₹', colSpan: 3, isNumOnly: true },
+      { type: 'input', name: 'salesPrice', label: 'Sales Price ₹', colSpan: 3, isNumOnly: true },
+      { type: 'input', name: 'taxPercent', label: 'Tax %', colSpan: 3, isNumOnly: true, maxLength: 2 },
+      // { type: 'input', name: 'taxType', label: 'Tax Type', colSpan: 3 },
+      // { type: 'input', name: 'barcode', label: 'Barcode', colSpan: 3 },
+      { type: 'input', name: 'brandName', label: 'Brand Name', colSpan: 3 },
+      { type: 'textarea', name: 'description', label: 'Description', colSpan: 12 }
     ];
 
     this.fields.forEach(field => {
@@ -77,7 +90,9 @@ export class NewProductComponent implements OnInit {
     }
 
     this.loadAllCompanies();
-    this.setupProductAutocomplete();
+    this.loadCategoryByCompany();
+    // this.setupProductAutocomplete();
+    this.loadProductCategoryByCompany();
     // this.setupFieldMirroring();
   }
 
@@ -99,40 +114,74 @@ export class NewProductComponent implements OnInit {
     });
   }
 
-  setupProductAutocomplete(): void {
-    const companyCtrl = this.formGroup.get('company');
-    const productCtrl = this.formGroup.get('productName');
-    if (!companyCtrl || !productCtrl) return;
+  loadCategoryByCompany(): void {
+    this.productService.getCategories(1).subscribe(response => {
+      this.company = response.data;
 
-    productCtrl.valueChanges.pipe(
-      debounceTime(200),
-      distinctUntilChanged(),
-      switchMap(productValue => {
-        const selectedCompany = companyCtrl.value;
-
-        // Handle both cases: raw ID (e.g. 1) or object { id: 1, name: 'Lisha' }
-        const companyId = typeof selectedCompany === 'object' ? selectedCompany.id || selectedCompany.value : selectedCompany;
-
-        if (!companyId) return [];
-
-        return this.productService.getProduct(companyId);
-      })
-    ).subscribe(response => {
-      const uniqueProducts = Array.from(
+      const uniqueCompanies = Array.from(
         new Map(
-          response.data.map(p => [
-            p.productName,
-            {
-              value: p.productCompanyId, // or p.productNameId if that's more accurate
-              label: p.productName
-            }
-          ])
+          response.data.map(c => [c.value, {
+            value: c.value,      // Now it's just the raw ID
+            label: c.key         // The display name
+          }])
         ).values()
       );
 
-      this.updateFieldOptions('productName', uniqueProducts);
+      this.updateFieldOptions('category', uniqueCompanies);
     });
   }
+
+  loadProductCategoryByCompany(): void {
+    this.productService.getProductCategories(1).subscribe(response => {
+      this.company = response.data;
+
+      const uniqueCompanies = Array.from(
+        new Map(
+          response.data.map(c => [c.value, {
+            value: c.value,      // Now it's just the raw ID
+            label: c.key         // The display name
+          }])
+        ).values()
+      );
+
+      this.updateFieldOptions('productName', uniqueCompanies);
+    });
+  }
+
+  // setupProductAutocomplete(): void {
+  //   const companyCtrl = this.formGroup.get('company');
+  //   const productCtrl = this.formGroup.get('productName');
+  //   if (!companyCtrl || !productCtrl) return;
+
+  //   productCtrl.valueChanges.pipe(
+  //     debounceTime(200),
+  //     distinctUntilChanged(),
+  //     switchMap(productValue => {
+  //       const selectedCompany = companyCtrl.value;
+
+  //       // Handle both cases: raw ID (e.g. 1) or object { id: 1, name: 'Lisha' }
+  //       const companyId = typeof selectedCompany === 'object' ? selectedCompany.id || selectedCompany.value : selectedCompany;
+
+  //       if (!companyId) return [];
+
+  //       return this.productService.getProduct(companyId);
+  //     })
+  //   ).subscribe(response => {
+  //     const uniqueProducts = Array.from(
+  //       new Map(
+  //         response.data.map(p => [
+  //           p.productName,
+  //           {
+  //             value: p.productCompanyId, // or p.productNameId if that's more accurate
+  //             label: p.productName
+  //           }
+  //         ])
+  //       ).values()
+  //     );
+
+  //     this.updateFieldOptions('productName', uniqueProducts);
+  //   });
+  // }
 
 
   updateFieldOptions(fieldName: string, options: { value: any; label: string }[]): void {
