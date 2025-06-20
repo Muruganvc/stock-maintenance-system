@@ -8,7 +8,8 @@ import { Router } from '@angular/router';
 import { ProductService } from '../shared/services/product.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
-import { IProductTypeResponse } from '../shared/models/IProductTypeRequest';
+import { IGetProductsQueryResponse } from '../shared/models/IProductTypeRequest';
+import { DataService } from '../shared/services/data.service';
 
 @Component({
   selector: 'app-product-list',
@@ -22,12 +23,12 @@ import { IProductTypeResponse } from '../shared/models/IProductTypeRequest';
   styleUrl: './product-list.component.scss'
 })
 export class ProductListComponent implements OnInit {
-  constructor(private router: Router, private productService: ProductService, private dialog: MatDialog) { }
+  constructor(private router: Router, private productService: ProductService, private dialog: MatDialog, private readonly dataService: DataService) { }
   ngOnInit(): void {
     this.getProducts();
   }
 
-  products: IProductTypeResponse[] = [];
+  products: IGetProductsQueryResponse[] = [];
 
   getProducts() {
     this.productService.getProductTypes().subscribe({
@@ -41,28 +42,38 @@ export class ProductListComponent implements OnInit {
         { key: 'isActive', label: 'Active', align: 'right', type: 'checkbox', isHidden: true },
       );
     }
-
   }
 
   columns: { key: string; label: string; align: 'left' | 'center' | 'right', type?: string, isHidden: boolean }[] = [
-    { key: 'companyName', label: 'Company', align: 'left', isHidden: false },
-    { key: 'categoryName', label: 'Cat.Name', align: 'right', isHidden: false },
-    { key: 'productTypeName', label: 'Prod.Name', align: 'right', isHidden: false },
-    { key: 'description', label: 'Description', align: 'right', isHidden: false },
-    { key: 'mrp', label: 'Mrp ₹', align: 'right', isHidden: false },
-    { key: 'salesPrice', label: 'Mrp ₹', align: 'right', isHidden: false },
-    { key: 'taxPercent', label: 'Tax %', align: 'right', isHidden: false },
-    { key: 'totalQuantity', label: 'Total Quantity', align: 'right', isHidden: false },
-    { key: 'userName', label: 'Creator', align: 'right', isHidden: false }
+    // { key: 'companyName', label: 'Company', align: 'left', isHidden: false },
+    // { key: 'categoryName', label: 'Cat.Name', align: 'right', isHidden: false },
+    { key: 'productName', label: 'Prod.Name', align: 'left', isHidden: false },
+    { key: 'description', label: 'Description', align: 'left', isHidden: false },
+    { key: 'mrp', label: 'Mrp ₹', align: 'left', isHidden: false },
+    { key: 'salesPrice', label: 'Mrp ₹', align: 'left', isHidden: false },
+    { key: 'taxPercent', label: 'Tax %', align: 'left', isHidden: false },
+    { key: 'quantity', label: 'Total Quantity', align: 'left', isHidden: false },
+    { key: 'userName', label: 'Creator', align: 'left', isHidden: false }
   ];
 
-  onEdit(product: IProductTypeResponse) {
+  onEdit(product: IGetProductsQueryResponse) {
     this.router.navigate(['/new-product'], {
       state: { product }
     });
   }
 
-  onDelete(product: IProductTypeResponse) {
+  handleFieldChange(event: { row: IGetProductsQueryResponse; key: string; value: any }) {
+    this.productService.activatProduct(event.row.productId ?? 0).subscribe({
+      next: result => {
+        if (result) {
+          // this.getProducts();
+        }
+      }
+    })
+  }
+
+  onDelete(product: IGetProductsQueryResponse) {
+    alert('Not yet Implemented.'); return;
     this.openConfirm(product['key']);
   }
 

@@ -51,7 +51,7 @@
               <!-- <app-searchable-select [label]="field.label" [placeholder]="field.placeholder || 'Search...'"
                 [options]="field.options" [formControlName]="field.name" [control]="getControl(field.name)">
               </app-searchable-select> -->
-              <app-searchable-select [formControlName]="field.name" [label]="field.label"
+              <app-searchable-select [formControlName]="field.name"   [label]="field.label"
                 [placeholder]="field.placeholder || 'Search...'" [options]="field.options"
                 (selectionChange)="matSelectionChange(field.name, $event)">
               </app-searchable-select>

@@ -1,2 +1,2 @@
 <app-dynamic-form [formGroup]="formGroup" [submitBtntitle]='submitBtntitle' [fields]="fields"
-    (submitEvent)="handleSubmit($event)" (cancelEvent)='cancel()' (selectionChange)="dropdownChange($event.controlName,$event.matSelectChange)"  [title]="'New Product'"></app-dynamic-form>
+    (submitEvent)="handleSubmit($event)" (cancelEvent)='cancel()' (selectionChange)="dropdownChange($event.controlName,$event.selectedOption)"  [title]="'New Product'"></app-dynamic-form>

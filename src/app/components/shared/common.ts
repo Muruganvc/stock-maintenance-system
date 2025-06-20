@@ -7,4 +7,3 @@ export function encryptPassword(password: string): string {
     return CryptoJS.AES.encrypt(password, secretKey).toString();
 }
 
-

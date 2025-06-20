@@ -38,7 +38,7 @@ export interface TableColumn {
     MatInputModule,
     MatCardModule,
     MatButtonModule, MatIconModule,
-    LayoutModule, MatExpansionModule,MatCheckboxModule
+    LayoutModule, MatExpansionModule, MatCheckboxModule
   ],
   templateUrl: './custom-table.component.html',
   styleUrl: './custom-table.component.scss'
@@ -55,6 +55,7 @@ export class CustomTableComponent<T extends TableRow> implements OnChanges {
   @Input() columns: TableColumn[] = [];
   @Input() showCheckbox = false;
   @Input() showActions = true;
+  @Output() fieldChanged = new EventEmitter<{ row: any; key: string; value: any }>();
 
   title = input.required();
   addBtnTitle = input();
@@ -166,4 +167,9 @@ export class CustomTableComponent<T extends TableRow> implements OnChanges {
   openNew() {
     this.newOpen.emit('new');
   }
+
+onFieldChange(row: any, key: string, value: any): void {
+  const updatedRow = { ...row, [key]: value };
+  this.fieldChanged.emit({ row: updatedRow, key, value });
+}
 }

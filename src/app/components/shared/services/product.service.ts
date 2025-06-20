@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { IProductCompanyResponse } from '../models/IProduct';
 import { ApiService } from './api.service';
 import { KeyValuePair } from '../models/IKeyValuePair';
-import { IProductTypeResponse, IProductTypeRequest } from '../models/IProductTypeRequest';
+import { IGetProductsQueryResponse, IProductRequest, IUpdateProductRequest } from '../models/IProductTypeRequest';
+import { map, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ import { IProductTypeResponse, IProductTypeRequest } from '../models/IProductTyp
 export class ProductService {
   constructor(private readonly api: ApiService) { }
 
-  getProduct(companyId: number) {
+  getProduct12(companyId: number) {
     return this.api.get<IProductCompanyResponse[]>(`product-company?companyId=${companyId}`);
   }
 
@@ -27,11 +28,17 @@ export class ProductService {
   getProductCategories(categoryId: number) {
     return this.api.get<KeyValuePair[]>(`product-category/${categoryId}`);
   }
-  createProductType(productType: IProductTypeRequest) {
-    return this.api.post<IProductTypeRequest, number>('product-company', productType);
+  createProduct(product: IProductRequest) {
+    return this.api.post<IProductRequest, number>('product', product);
   }
 
   getProductTypes() {
-    return this.api.get<IProductTypeResponse[]>('products');
+    return this.api.get<IGetProductsQueryResponse[]>('products');
+  }
+  updateProduct(productId: number, product: IUpdateProductRequest) {
+    return this.api.put<IUpdateProductRequest, number>(`product/${productId}`, product);
+  }
+  activatProduct(productId: number) {
+    return this.api.put<{}, number>(`product/activate/${productId}`, {});
   }
 }

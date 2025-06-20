@@ -83,17 +83,19 @@ export class ApiService {
       .pipe(catchError(this.handleError));
   }
 
-  put<TRequest,TResponse>(
+  put<TRequest, TResponse>(
     url: string,
     body: TRequest,
     params?: ApiParams,
     headers?: ApiHeaders
   ): Observable<ApiResponse<TResponse>> {
+    const options = {
+      headers: this.createHeaders(headers),
+      params: this.createParams(params),
+    };
+
     return this.http
-      .put<ApiResponse<TResponse>>(`${this.baseUrl}${url}`, body, {
-        headers: this.createHeaders(headers),
-        params: this.createParams(params),
-      })
+      .put<ApiResponse<TResponse>>(`${this.baseUrl}${url}`, body ?? {}, options)
       .pipe(catchError(this.handleError));
   }
 

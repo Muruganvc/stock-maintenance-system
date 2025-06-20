@@ -1,7 +1,7 @@
-
 <mat-form-field appearance="outline" class="full-width">
   <mat-label>{{ label }}</mat-label>
-   <mat-select  [value]="value"  (selectionChange)="onSelectionChange($event)"
+
+  <mat-select [(value)]="value" [compareWith]="compareFn" (selectionChange)="onSelectionChange($event)"
     (openedChange)="onDropdownOpened($event)" panelClass="custom-select-panel">
     <!-- Search input -->
     <div class="search-wrapper" (click)="$event.stopPropagation()">
@@ -12,15 +12,15 @@
       </mat-form-field>
     </div>
 
-    <!-- Options -->
+    <!-- Filtered options -->
     <ng-container *ngIf="filteredOptions.length > 0; else noOptions">
-      <mat-option *ngFor="let option of filteredOptions; let i = index" [value]="option.value"
+      <mat-option (click)="onOptionClicked(option); $event.stopPropagation();" *ngFor="let option of filteredOptions; let i = index" [value]="option"
         [class.active]="i === activeIndex">
-        <span>{{option.label}}</span>
+        {{ option.key }}
       </mat-option>
     </ng-container>
 
-    <!-- No match fallback -->
+    <!-- No options fallback -->
     <ng-template #noOptions>
       <mat-option disabled>No matching options</mat-option>
     </ng-template>

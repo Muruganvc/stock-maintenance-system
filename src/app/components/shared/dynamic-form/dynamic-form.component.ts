@@ -48,7 +48,12 @@ export class DynamicFormComponent {
   @Output() cancelEvent = new EventEmitter();
   @Input({ required: true }) title!: string;
   @Output() submitEvent = new EventEmitter<FormGroup>();
-  @Output() selectionChange = new EventEmitter<{controlName : string, matSelectChange : MatSelectChange}>();
+  @Output() selectionChange = new EventEmitter<{
+    controlName: string, selectedOption: {
+      label: string;
+      value: any;
+    } | undefined
+  }>();
   @Input({ required: true }) submitBtntitle!: string;
 
   filteredOptions: { [key: string]: Observable<any[]> } = {};
@@ -122,8 +127,8 @@ export class DynamicFormComponent {
     this.cancelEvent.emit();
   }
 
-  matSelectionChange(controlName: string, event: MatSelectChange){
-    this.selectionChange.emit({ controlName: controlName, matSelectChange: event });
+  matSelectionChange(controlName: string, selectedOption: any) {
+    this.selectionChange.emit({ controlName: controlName, selectedOption: selectedOption });
   }
 
 } // end component
